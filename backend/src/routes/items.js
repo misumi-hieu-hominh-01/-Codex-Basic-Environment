@@ -1,12 +1,16 @@
 import { Router } from "express";
-import Item from "./models/item.js";
+import Item from "../models/item.js";
 
 const router = Router();
 
 // GET /items - list all items
 router.get("/", async (req, res, next) => {
   try {
-    const items = await Item.find().populate("location");
+    const filter = {};
+    if (req.query.status === "pending" || req.query.unassigned === "true") {
+      filter.location = null;
+    }
+    const items = await Item.find(filter).populate("location");
     res.json(items);
   } catch (err) {
     next(err);
@@ -29,7 +33,12 @@ router.get("/:id", async (req, res, next) => {
 // POST /items - create new item
 router.post("/", async (req, res, next) => {
   try {
-    const item = await Item.create(req.body);
+    const { barcode, metadata, locationId } = req.body;
+    const data = { barcode, metadata };
+    if (locationId) {
+      data.location = locationId;
+    }
+    const item = await Item.create(data);
     res.status(201).json(item);
   } catch (err) {
     next(err);
