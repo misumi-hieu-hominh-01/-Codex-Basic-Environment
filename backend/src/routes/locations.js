@@ -1,8 +1,16 @@
 import { Router } from "express";
+import { body, param, validationResult } from "express-validator";
 import Location from "../models/location.js";
 import multer from "multer";
 import path from "path";
 import { unlink } from "fs/promises";
+
+const validate = (validations) => async (req, res, next) => {
+  await Promise.all(validations.map((v) => v.run(req)));
+  const errors = validationResult(req);
+  if (errors.isEmpty()) return next();
+  return res.status(400).json({ message: "Validation failed", errors: errors.array() });
+};
 
 // Configure multer storage for development. In production, switch to Cloudinary.
 const storage = multer.diskStorage({
@@ -28,25 +36,36 @@ router.get("/", async (req, res, next) => {
 });
 
 // GET /locations/:id - get location
-router.get("/:id", async (req, res, next) => {
-  try {
-    const location = await Location.findById(req.params.id);
-    if (!location) {
-      return res.status(404).json({ message: "Location not found" });
+router.get(
+  "/:id",
+  validate([param("id").isMongoId().withMessage("Invalid location id")]),
+  async (req, res, next) => {
+    try {
+      const location = await Location.findById(req.params.id);
+      if (!location) {
+        return res.status(404).json({ message: "Location not found" });
+      }
+      res.json(location);
+    } catch (err) {
+      next(err);
     }
-    res.json(location);
-  } catch (err) {
-    next(err);
   }
-});
+);
 
 // Expecting multipart/form-data with optional image field named "image".
-router.post("/", upload.single("image"), async (req, res, next) => {
-  try {
-    const locationData = {
-      name: req.body.name,
-      description: req.body.description,
-    };
+router.post(
+  "/",
+  upload.single("image"),
+  validate([
+    body("name").isString().notEmpty().withMessage("name is required"),
+    body("description").optional().isString().withMessage("description must be string"),
+  ]),
+  async (req, res, next) => {
+    try {
+      const locationData = {
+        name: req.body.name,
+        description: req.body.description,
+      };
 
     if (req.file) {
       // Store relative path; in production, store Cloudinary URL instead.
@@ -61,12 +80,20 @@ router.post("/", upload.single("image"), async (req, res, next) => {
 });
 
 // PUT /locations/:id - update location
-router.put("/:id", upload.single("image"), async (req, res, next) => {
-  try {
-    const location = await Location.findById(req.params.id);
-    if (!location) {
-      return res.status(404).json({ message: "Location not found" });
-    }
+router.put(
+  "/:id",
+  upload.single("image"),
+  validate([
+    param("id").isMongoId().withMessage("Invalid location id"),
+    body("name").optional().isString().notEmpty().withMessage("name must be string"),
+    body("description").optional().isString().withMessage("description must be string"),
+  ]),
+  async (req, res, next) => {
+    try {
+      const location = await Location.findById(req.params.id);
+      if (!location) {
+        return res.status(404).json({ message: "Location not found" });
+      }
 
     const updateData = { ...req.body };
 
@@ -96,16 +123,20 @@ router.put("/:id", upload.single("image"), async (req, res, next) => {
 });
 
 // DELETE /locations/:id - remove location
-router.delete("/:id", async (req, res, next) => {
-  try {
-    const location = await Location.findByIdAndDelete(req.params.id);
-    if (!location) {
-      return res.status(404).json({ message: "Location not found" });
+router.delete(
+  "/:id",
+  validate([param("id").isMongoId().withMessage("Invalid location id")]),
+  async (req, res, next) => {
+    try {
+      const location = await Location.findByIdAndDelete(req.params.id);
+      if (!location) {
+        return res.status(404).json({ message: "Location not found" });
+      }
+      res.json({ message: "Location deleted" });
+    } catch (err) {
+      next(err);
     }
-    res.json({ message: "Location deleted" });
-  } catch (err) {
-    next(err);
   }
-});
+);
 
 export default router;
