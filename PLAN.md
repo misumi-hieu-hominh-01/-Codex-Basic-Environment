@@ -192,7 +192,7 @@ codex-build-app/
 ## 8. Barcode Scanning Library
 
 - **Recommendation**: `barcode-detect` and `react-webcam`.
-  - `react-zxing`: Provides access to webcam video feed within React components.Flexible and works well with custom frame processing.
+  - `react-webcam`: Provides access to webcam video feed within React components.Flexible and works well with custom frame processing.
   - `barcode-detect`: a modern native web API that allows browsers to detect barcodes directly from images or camera feeds, without needing external libraries.
 - **Implementation**:
   - The `BarcodeScanner.tsx` component will initialize the chosen library.
