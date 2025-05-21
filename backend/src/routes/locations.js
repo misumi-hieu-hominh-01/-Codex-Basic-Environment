@@ -123,6 +123,8 @@ router.delete(
       if (!location) {
         return res.status(404).json({ message: "Location not found" });
       }
+      // Remove associated image if present
+      await deleteImage(location.imageUrl);
       res.json({ message: "Location deleted" });
     } catch (err) {
       next(err);

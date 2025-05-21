@@ -30,7 +30,21 @@ export async function saveImage(file) {
 
 export async function deleteImage(imageUrl) {
   if (!imageUrl) return;
-  // Only delete local files. In production, delete from Cloudinary instead.
+  // If the image lives on Cloudinary, remove it there
+  if (imageUrl.includes('res.cloudinary.com')) {
+    const match = imageUrl.match(/\/upload\/(?:v\d+\/)?(.+)\.[^/.?]+/);
+    if (match) {
+      const publicId = match[1];
+      try {
+        await cloudinary.uploader.destroy(publicId);
+        return;
+      } catch {
+        // ignore errors deleting from Cloudinary
+      }
+    }
+  }
+
+  // Fallback to deleting a local file if it exists
   if (imageUrl.startsWith('/uploads/locations/')) {
     const imagePath = path.join(
       process.cwd(),
