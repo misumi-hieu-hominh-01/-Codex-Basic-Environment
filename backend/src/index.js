@@ -1,8 +1,12 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
+import dotenv from 'dotenv';
 import itemsRouter from './routes/items.js';
 import locationsRouter from './routes/locations.js';
+
+// Load environment variables
+dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 4000;
