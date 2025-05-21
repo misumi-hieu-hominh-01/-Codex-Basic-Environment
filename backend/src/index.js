@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import itemsRouter from './routes/items.js';
 import locationsRouter from './routes/locations.js';
+import path from 'path';
 
 // Load environment variables
 dotenv.config();
@@ -13,6 +14,7 @@ const port = process.env.PORT || 4000;
 
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static(path.join(process.cwd(), 'public/uploads')));
 
 app.use('/items', itemsRouter);
 app.use('/locations', locationsRouter);
