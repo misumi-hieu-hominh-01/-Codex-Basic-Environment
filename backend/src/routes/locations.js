@@ -1,5 +1,5 @@
-import { Router } from 'express';
-import Location from '../models/location.js';
+import { Router } from "express";
+import Location from "./models/location.js";
 import multer from 'multer';
 import path from 'path';
 
@@ -17,7 +17,7 @@ const upload = multer({ storage });
 const router = Router();
 
 // GET /locations - list all locations
-router.get('/', async (req, res, next) => {
+router.get("/", async (req, res, next) => {
   try {
     const locations = await Location.find();
     res.json(locations);
@@ -27,11 +27,11 @@ router.get('/', async (req, res, next) => {
 });
 
 // GET /locations/:id - get location
-router.get('/:id', async (req, res, next) => {
+router.get("/:id", async (req, res, next) => {
   try {
     const location = await Location.findById(req.params.id);
     if (!location) {
-      return res.status(404).json({ message: 'Location not found' });
+      return res.status(404).json({ message: "Location not found" });
     }
     res.json(location);
   } catch (err) {
@@ -42,6 +42,7 @@ router.get('/:id', async (req, res, next) => {
 // POST /locations - create new location
 // Expecting multipart/form-data with optional image field named "image".
 router.post('/', upload.single('image'), async (req, res, next) => {
+router.post("/", async (req, res, next) => {
   try {
     const locationData = {
       name: req.body.name,
@@ -61,11 +62,13 @@ router.post('/', upload.single('image'), async (req, res, next) => {
 });
 
 // PUT /locations/:id - update location
-router.put('/:id', async (req, res, next) => {
+router.put("/:id", async (req, res, next) => {
   try {
-    const location = await Location.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const location = await Location.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
     if (!location) {
-      return res.status(404).json({ message: 'Location not found' });
+      return res.status(404).json({ message: "Location not found" });
     }
     res.json(location);
   } catch (err) {
@@ -74,13 +77,13 @@ router.put('/:id', async (req, res, next) => {
 });
 
 // DELETE /locations/:id - remove location
-router.delete('/:id', async (req, res, next) => {
+router.delete("/:id", async (req, res, next) => {
   try {
     const location = await Location.findByIdAndDelete(req.params.id);
     if (!location) {
-      return res.status(404).json({ message: 'Location not found' });
+      return res.status(404).json({ message: "Location not found" });
     }
-    res.json({ message: 'Location deleted' });
+    res.json({ message: "Location deleted" });
   } catch (err) {
     next(err);
   }
