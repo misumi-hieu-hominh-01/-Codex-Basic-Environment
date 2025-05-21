@@ -9,6 +9,16 @@ npm install
 npm run dev
 ```
 
+Create a `.env` file (you can copy from `.env.example`) to configure runtime
+settings:
+
+```
+cp .env.example .env
+```
+
+The placeholders for Cloudinary credentials prepare the app for future cloud
+image storage integration.
+
 The server listens on `http://localhost:4000` by default and exposes basic routes for items and locations.
 
 ## Testing Item Location Assignment
@@ -35,4 +45,22 @@ You can manually verify that an item's location can be assigned or changed using
    curl http://localhost:4000/items/<id>
    ```
 
-   The response should include the populated `location` object.
+The response should include the populated `location` object.
+
+## Environment Variables
+
+The backend reads configuration from a `.env` file. An example file is
+provided as `.env.example`. At minimum, you can copy it and adjust the values:
+
+```bash
+cp .env.example .env
+```
+
+The Cloudinary variables are placeholders for an upcoming switch to cloud
+image storage:
+
+- `CLOUDINARY_CLOUD_NAME`
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET`
+
+These are unused in local development but included for future compatibility.
