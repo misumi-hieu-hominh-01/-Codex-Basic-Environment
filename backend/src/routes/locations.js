@@ -1,15 +1,15 @@
 import { Router } from "express";
 import Location from "./models/location.js";
-import multer from 'multer';
-import path from 'path';
+import multer from "multer";
+import path from "path";
 
 // Configure multer storage for development. In production, switch to Cloudinary.
 const storage = multer.diskStorage({
-  destination: path.join(process.cwd(), 'public/uploads/locations'),
+  destination: path.join(process.cwd(), "public/uploads/locations"),
   filename: (req, file, cb) => {
     const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
     cb(null, unique + path.extname(file.originalname));
-  }
+  },
 });
 
 const upload = multer({ storage });
@@ -39,14 +39,12 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-// POST /locations - create new location
 // Expecting multipart/form-data with optional image field named "image".
-router.post('/', upload.single('image'), async (req, res, next) => {
-router.post("/", async (req, res, next) => {
+router.post("/", upload.single("image"), async (req, res, next) => {
   try {
     const locationData = {
       name: req.body.name,
-      description: req.body.description
+      description: req.body.description,
     };
 
     if (req.file) {
