@@ -1,5 +1,5 @@
 import { Router } from "express";
-import Location from "./models/location.js";
+import Location from "../models/location.js";
 import multer from "multer";
 import path from "path";
 
