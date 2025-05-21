@@ -3,7 +3,7 @@ import { body, param, validationResult } from "express-validator";
 import Location from "../models/location.js";
 import multer from "multer";
 import path from "path";
-import { unlink } from "fs/promises";
+import { saveImage, deleteImage } from "../utils/imageStorage.js";
 
 const validate = (validations) => async (req, res, next) => {
   await Promise.all(validations.map((v) => v.run(req)));
@@ -68,8 +68,8 @@ router.post(
       };
 
     if (req.file) {
-      // Store relative path; in production, store Cloudinary URL instead.
-      locationData.imageUrl = `/uploads/locations/${req.file.filename}`;
+      // Save locally; in production, upload to Cloudinary and store URL.
+      locationData.imageUrl = saveImage(req.file);
     }
 
     const location = await Location.create(locationData);
@@ -98,19 +98,10 @@ router.put(
     const updateData = { ...req.body };
 
     if (req.file) {
-      if (location.imageUrl && location.imageUrl.startsWith("/uploads/locations/")) {
-        const oldImagePath = path.join(
-          process.cwd(),
-          "public",
-          location.imageUrl.startsWith("/") ? location.imageUrl.slice(1) : location.imageUrl
-        );
-        try {
-          await unlink(oldImagePath);
-        } catch {
-          // ignore errors removing old image
-        }
-      }
-      updateData.imageUrl = `/uploads/locations/${req.file.filename}`;
+      // Remove old image if present
+      await deleteImage(location.imageUrl);
+      // Save new image and store returned URL
+      updateData.imageUrl = saveImage(req.file);
     }
 
     const updated = await Location.findByIdAndUpdate(req.params.id, updateData, {
