@@ -2,6 +2,7 @@ import { Router } from "express";
 import Location from "../models/location.js";
 import multer from "multer";
 import path from "path";
+import { unlink } from "fs/promises";
 
 // Configure multer storage for development. In production, switch to Cloudinary.
 const storage = multer.diskStorage({
@@ -60,15 +61,35 @@ router.post("/", upload.single("image"), async (req, res, next) => {
 });
 
 // PUT /locations/:id - update location
-router.put("/:id", async (req, res, next) => {
+router.put("/:id", upload.single("image"), async (req, res, next) => {
   try {
-    const location = await Location.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
+    const location = await Location.findById(req.params.id);
     if (!location) {
       return res.status(404).json({ message: "Location not found" });
     }
-    res.json(location);
+
+    const updateData = { ...req.body };
+
+    if (req.file) {
+      if (location.imageUrl && location.imageUrl.startsWith("/uploads/locations/")) {
+        const oldImagePath = path.join(
+          process.cwd(),
+          "public",
+          location.imageUrl.startsWith("/") ? location.imageUrl.slice(1) : location.imageUrl
+        );
+        try {
+          await unlink(oldImagePath);
+        } catch {
+          // ignore errors removing old image
+        }
+      }
+      updateData.imageUrl = `/uploads/locations/${req.file.filename}`;
+    }
+
+    const updated = await Location.findByIdAndUpdate(req.params.id, updateData, {
+      new: true,
+    });
+    res.json(updated);
   } catch (err) {
     next(err);
   }
