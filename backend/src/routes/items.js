@@ -50,7 +50,7 @@ router.put("/:id", async (req, res, next) => {
   try {
     const item = await Item.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
-    });
+    }).populate("location");
     if (!item) {
       return res.status(404).json({ message: "Item not found" });
     }
