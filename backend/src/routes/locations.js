@@ -68,8 +68,8 @@ router.post(
       };
 
     if (req.file) {
-      // Save locally; in production, upload to Cloudinary and store URL.
-      locationData.imageUrl = saveImage(req.file);
+      // Upload image to Cloudinary and store returned URL
+      locationData.imageUrl = await saveImage(req.file);
     }
 
     const location = await Location.create(locationData);
@@ -101,7 +101,7 @@ router.put(
       // Remove old image if present
       await deleteImage(location.imageUrl);
       // Save new image and store returned URL
-      updateData.imageUrl = saveImage(req.file);
+      updateData.imageUrl = await saveImage(req.file);
     }
 
     const updated = await Location.findByIdAndUpdate(req.params.id, updateData, {
