@@ -26,7 +26,12 @@ app.get('/', (req, res) => {
 // Basic error handler
 app.use((err, req, res, next) => {
   console.error(err);
-  res.status(500).json({ message: 'Server error', error: err.message });
+  const status = err.status || 500;
+  const payload = { message: err.message || 'Server error' };
+  if (err.errors) {
+    payload.errors = err.errors;
+  }
+  res.status(status).json(payload);
 });
 
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/warehouse').then(() => {
