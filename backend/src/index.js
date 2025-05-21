@@ -21,6 +21,12 @@ app.get('/', (req, res) => {
   res.json({ message: 'Warehouse Backend API' });
 });
 
+// Basic error handler
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ message: 'Server error', error: err.message });
+});
+
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/warehouse').then(() => {
   console.log('Connected to MongoDB');
   app.listen(port, () => console.log(`Backend running on port ${port}`));
