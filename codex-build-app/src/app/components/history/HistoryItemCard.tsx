@@ -1,36 +1,35 @@
 import type { Item } from "../../types";
+import styles from "./HistoryItemCard.module.css";
+
+/**
+ * Displays a single item from the history list in a card format.
+ */
 
 interface HistoryItemCardProps {
   item: Item;
 }
 
 export function HistoryItemCard({ item }: HistoryItemCardProps) {
-  const {
-    barcode,
-    name,
-    quantity,
-    scannedAt,
-    location,
-  } = item;
-
+  const { barcode, name, quantity, scannedAt, location } = item;
   const locationName =
     typeof location === "object" && location ? location.name : undefined;
 
   return (
-    <div style={{ border: "1px solid rgba(0,0,0,0.1)", padding: "0.75rem", borderRadius: 6 }}>
-      <h3 style={{ marginBottom: "0.5rem" }}>{name}</h3>
-      <div>
-        <strong>Barcode:</strong> {barcode}
+    <div className={styles.card}>
+      <h3 className={styles.name}>{name}</h3>
+      <div className={styles.meta}>
+        <span className={styles.label}>Barcode:</span> {barcode}
       </div>
-      <div>
-        <strong>Quantity:</strong> {quantity}
+      <div className={styles.meta}>
+        <span className={styles.label}>Quantity:</span> {quantity}
       </div>
-      <div>
-        <strong>Scanned:</strong> {new Date(scannedAt).toLocaleString()}
+      <div className={styles.meta}>
+        <span className={styles.label}>Scanned:</span>{" "}
+        {new Date(scannedAt).toLocaleString()}
       </div>
       {locationName && (
-        <div>
-          <strong>Location:</strong> {locationName}
+        <div className={styles.meta}>
+          <span className={styles.label}>Location:</span> {locationName}
         </div>
       )}
     </div>
