@@ -16,6 +16,10 @@ export default function CheckInPage() {
     try {
       const newItem = await addItemApi({
         barcode,
+        // TODO: Allow user to specify item name
+        name: `Item ${barcode}`,
+        // TODO: Allow user to specify quantity
+        quantity: 1,
         scannedAt: new Date(),
         source,
       });
