@@ -157,6 +157,55 @@ Update the application to use a white background with appropriate adjustments to
    - Update component-specific CSS modules as needed
    - Maintain the existing CSS module pattern
 
+### Task 5: Barcode Detection Confirmation Modal
+
+**Current State:**
+Currently, when a barcode is detected, it's immediately processed without giving the user a chance to confirm or retry the scan.
+
+**Improvement Goals:**
+Implement a confirmation modal that appears when a barcode is successfully detected, providing options to:
+- Confirm the detected barcode
+- Try scanning again
+- Cancel/dismiss the operation
+- Improve user confidence in the scanning process
+
+**Implementation Guidelines:**
+1. **Modal Component Structure**
+   - Create or use an existing Modal component in src/app/components/ui/
+   - Implement overlay background with semi-transparency
+   - Ensure proper positioning (centered) and z-index
+   - Use proper animations for entrance/exit
+
+2. **Modal Content Design**
+   - Display a success icon or checkmark for visual confirmation
+   - Show the detected barcode prominently
+   - Include clear, concise text explaining the action required
+   - Use the application's existing color scheme (from CSS variables)
+   - Apply proper spacing and typography hierarchy
+
+3. **Action Controls**
+   - Implement distinct primary ("Confirm") and secondary ("Try Again") buttons
+   - Consider adding a dismiss/cancel option if appropriate
+   - Ensure buttons have proper hover/focus states
+   - Provide adequate size for touch targets on mobile (minimum 44×44px)
+
+4. **Integration with Scanner**
+   - Update the BarcodeScanner component to show the modal when a barcode is detected
+   - Pause scanning while the modal is open
+   - Resume scanning if the user opts to try again
+   - Process the barcode normally if confirmed
+
+5. **Accessibility Considerations**
+   - Implement focus trapping within the modal when open
+   - Add keyboard support (Enter to confirm, Esc to dismiss)
+   - Use proper ARIA attributes for screen readers
+   - Ensure sufficient color contrast for text and interactive elements
+
+6. **Code Structure**
+   - Use React's createPortal for proper modal rendering
+   - Implement TypeScript interfaces for props
+   - Follow the established styling patterns using CSS modules
+
 ## Development Standards
 
 When implementing these improvements:
