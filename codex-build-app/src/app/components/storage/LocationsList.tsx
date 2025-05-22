@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { LocationCard } from "./LocationCard";
 import { fetchLocations } from "../../lib/storageService";
 import { useLocationStore } from "../../store/locationStore";
+import styles from "./LocationsList.module.css";
 import type { StorageLocation } from "../../types";
 
 interface LocationsListProps {
@@ -16,7 +17,7 @@ interface LocationsListProps {
 }
 
 export function LocationsList({ onSelectLocation }: LocationsListProps) {
-  const { locations, setLocations } = useLocationStore();
+  const { locations: storageLocations, setLocations } = useLocationStore();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hasLoaded, setHasLoaded] = useState(false); // Local flag to prevent refetching
@@ -59,13 +60,13 @@ export function LocationsList({ onSelectLocation }: LocationsListProps) {
     return <div style={{ color: "red" }}>{error}</div>;
   }
 
-  if (locations.length === 0) {
+  if (storageLocations.length === 0) {
     return <div>No locations available.</div>;
   }
 
   return (
-    <div style={{ display: "grid", gap: "1rem" }}>
-      {locations.map((loc) => (
+    <div className={styles.list}>
+      {storageLocations.map((loc) => (
         <div
           key={loc._id}
           role={onSelectLocation ? "button" : undefined}
