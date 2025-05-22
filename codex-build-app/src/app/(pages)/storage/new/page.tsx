@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { LocationForm } from "../../../components/storage/LocationForm";
 import { useLocationStore } from "../../../store/locationStore";
 import type { StorageLocation } from "../../../types";
+import styles from "./page.module.css";
 
 export default function NewStoragePage() {
   const router = useRouter();
@@ -15,9 +16,11 @@ export default function NewStoragePage() {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+    <div className={styles.page}>
       <h1>Add New Storage Location</h1>
-      <LocationForm onSubmitSuccess={handleSubmitSuccess} />
+      <div className={styles.formWrapper}>
+        <LocationForm onSubmitSuccess={handleSubmitSuccess} />
+      </div>
     </div>
   );
 }
