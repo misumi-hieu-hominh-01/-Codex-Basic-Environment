@@ -11,7 +11,11 @@ interface HistoryItemCardProps {
   onDelete?: (item: Item) => void;
 }
 
-export function HistoryItemCard({ item, onEdit, onDelete }: HistoryItemCardProps) {
+export function HistoryItemCard({
+  item,
+  onEdit,
+  onDelete,
+}: HistoryItemCardProps) {
   const { barcode, name, quantity, scannedAt, location } = item;
   const locationName =
     typeof location === "object" && location ? location.name : undefined;
@@ -43,7 +47,7 @@ export function HistoryItemCard({ item, onEdit, onDelete }: HistoryItemCardProps
               aria-label="Edit item"
               onClick={() => onEdit(item)}
             >
-              ✎
+              🖋️
             </button>
           )}
           {onDelete && (

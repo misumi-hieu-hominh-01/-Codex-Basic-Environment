@@ -1,7 +1,9 @@
 .card {
+  position: relative;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   padding: 1rem;
+  padding-bottom: 2.5rem; /* Add extra padding at bottom for action buttons */
   background: var(--surface);
   color: var(--foreground);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -33,7 +35,9 @@
 }
 
 .actions {
-  margin-top: 0.5rem;
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
   display: flex;
   gap: 0.5rem;
 }
@@ -46,7 +50,15 @@
   line-height: 1;
   padding: 0.25rem;
   border-radius: 4px;
-  transition: background 0.2s;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconButton:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  transform: scale(1.1);
 }
 
 @media (hover: hover) and (pointer: fine) {
