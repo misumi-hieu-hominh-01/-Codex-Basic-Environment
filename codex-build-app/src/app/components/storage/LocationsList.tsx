@@ -14,9 +14,20 @@ interface LocationsListProps {
    * callback when clicked.
    */
   onSelectLocation?: (loc: StorageLocation) => void;
+  /** Search term used to filter locations by name or description */
+  searchQuery?: string;
+  /** Called when the edit icon on a card is clicked */
+  onEdit?: (loc: StorageLocation) => void;
+  /** Called when the delete icon on a card is clicked */
+  onDelete?: (loc: StorageLocation) => void;
 }
 
-export function LocationsList({ onSelectLocation }: LocationsListProps) {
+export function LocationsList({
+  onSelectLocation,
+  searchQuery,
+  onEdit,
+  onDelete,
+}: LocationsListProps) {
   const { locations: storageLocations, setLocations } = useLocationStore();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -66,20 +77,32 @@ export function LocationsList({ onSelectLocation }: LocationsListProps) {
     return <div style={{ color: "red" }}>{error}</div>;
   }
 
-  if (storageLocations.length === 0) {
-    return <div>No locations available.</div>;
+  const term = searchQuery?.toLowerCase() ?? "";
+  const filtered = storageLocations.filter((loc) => {
+    return (
+      loc.name.toLowerCase().includes(term) ||
+      (loc.description && loc.description.toLowerCase().includes(term))
+    );
+  });
+
+  if (filtered.length === 0) {
+    return <div>No locations found.</div>;
   }
 
   return (
     <div className={styles.list}>
-      {storageLocations.map((loc) => (
+      {filtered.map((loc) => (
         <div
           key={loc._id}
           role={onSelectLocation ? "button" : undefined}
           onClick={() => onSelectLocation?.(loc)}
           style={onSelectLocation ? { cursor: "pointer" } : undefined}
         >
-          <LocationCard location={loc} />
+          <LocationCard
+            location={loc}
+            onEdit={onEdit}
+            onDelete={onDelete}
+          />
         </div>
       ))}
     </div>

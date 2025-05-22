@@ -1,7 +1,8 @@
 .card {
+  position: relative;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  padding: 1rem;
+  padding: 1rem 1rem 2.5rem; /* Add extra padding at bottom for action buttons */
   background: var(--surface);
   color: var(--foreground);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -46,5 +47,44 @@
 @media (prefers-color-scheme: dark) {
   .description {
     color: rgba(255, 255, 255, 0.8);
+  }
+}
+
+.actions {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.iconButton {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconButton:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  transform: scale(1.1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .iconButton:hover {
+    background: rgba(0, 0, 0, 0.05);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .iconButton:hover {
+    background: rgba(255, 255, 255, 0.1);
   }
 }
