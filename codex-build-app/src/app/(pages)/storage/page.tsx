@@ -16,8 +16,12 @@ import modalStyles from "./new/page.module.css";
 export default function StoragePage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [editLocation, setEditLocation] = useState<StorageLocation | null>(null);
-  const [deleteLocation, setDeleteLocation] = useState<StorageLocation | null>(null);
+  const [editLocation, setEditLocation] = useState<StorageLocation | null>(
+    null
+  );
+  const [deleteLocation, setDeleteLocation] = useState<StorageLocation | null>(
+    null
+  );
   const [deleting, setDeleting] = useState(false);
   const { removeLocation } = useLocationStore();
 
@@ -37,9 +41,7 @@ export default function StoragePage() {
       setDeleteLocation(null);
     } catch (err) {
       console.error(err);
-      alert(
-        err instanceof Error ? err.message : "Failed to delete location"
-      );
+      alert(err instanceof Error ? err.message : "Failed to delete location");
     } finally {
       setDeleting(false);
     }
@@ -56,7 +58,10 @@ export default function StoragePage() {
             onChange={(e) => setSearch(e.target.value)}
           />
           <Button type="button" onClick={() => setModalOpen(true)}>
-            Add New Storage Location
+            <span className={styles.buttonTextShort}>Add</span>
+            <span className={styles.buttonTextFull}>
+              Add New Storage Location
+            </span>
           </Button>
         </div>
       </div>
@@ -75,7 +80,10 @@ export default function StoragePage() {
         </div>
       </Modal>
 
-      <Modal isOpen={Boolean(editLocation)} onClose={() => setEditLocation(null)}>
+      <Modal
+        isOpen={Boolean(editLocation)}
+        onClose={() => setEditLocation(null)}
+      >
         <div className={modalStyles.page}>
           <h3>Edit Storage Location</h3>
           <div className={modalStyles.formWrapper}>

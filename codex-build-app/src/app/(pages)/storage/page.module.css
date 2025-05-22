@@ -37,3 +37,22 @@
     padding-bottom: 60px;
   }
 }
+
+/* Responsive button text styles */
+.buttonTextShort {
+  display: inline;
+}
+
+.buttonTextFull {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .buttonTextShort {
+    display: none;
+  }
+
+  .buttonTextFull {
+    display: inline;
+  }
+}

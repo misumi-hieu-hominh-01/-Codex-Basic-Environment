@@ -2,7 +2,7 @@
   position: relative;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  padding: 1rem;
+  padding: 1rem 1rem 2.5rem; /* Add extra padding at bottom for action buttons */
   background: var(--surface);
   color: var(--foreground);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -48,7 +48,7 @@
 
 .actions {
   position: absolute;
-  top: 0.5rem;
+  bottom: 0.5rem;
   right: 0.5rem;
   display: flex;
   gap: 0.5rem;

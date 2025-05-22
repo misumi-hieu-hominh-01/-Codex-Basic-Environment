@@ -12,7 +12,11 @@ interface LocationCardProps {
 
 const DEFAULT_IMAGE_URL = "/defaultS.png"; // Path to the default image in the public folder
 
-export function LocationCard({ location, onEdit, onDelete }: LocationCardProps) {
+export function LocationCard({
+  location,
+  onEdit,
+  onDelete,
+}: LocationCardProps) {
   const { imageUrl, name, description } = location;
   const displayImageUrl = imageUrl || DEFAULT_IMAGE_URL;
 
@@ -27,7 +31,7 @@ export function LocationCard({ location, onEdit, onDelete }: LocationCardProps) 
               aria-label="Edit location"
               onClick={() => onEdit(location)}
             >
-              ✏
+              🖋️
             </button>
           )}
           {onDelete && (
