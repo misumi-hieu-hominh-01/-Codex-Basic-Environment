@@ -9,6 +9,7 @@ import type { Item } from "../../types";
 import { useItemStore } from "../../store/itemStore";
 import { HistoryItemCard } from "../../components/history/HistoryItemCard";
 import { CheckInItemModal } from "../../components/history/CheckInItemModal";
+import { DeleteConfirmModal } from "../../components/history/DeleteConfirmModal";
 import { Input } from "../../components/ui/Input";
 import { ToggleSwitch } from "../../components/ui/ToggleSwitch";
 import styles from "./page.module.css";
@@ -24,6 +25,8 @@ export default function HistoryPage() {
   const [search, setSearch] = useState("");
   const [showStored, setShowStored] = useState(false);
   const [checkInItem, setCheckInItem] = useState<Item | null>(null);
+  const [deleteItem, setDeleteItem] = useState<Item | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -54,14 +57,21 @@ export default function HistoryPage() {
     setCheckInItem(item);
   };
 
-  const handleDelete = async (item: Item) => {
-    if (!confirm("Delete this entry?")) return;
+  const handleDelete = (item: Item) => {
+    setDeleteItem(item);
+  };
+
+  const confirmDelete = async (item: Item) => {
+    setDeleting(true);
     try {
       await deleteItemApi(item._id);
       removeItem(item._id);
+      setDeleteItem(null);
     } catch (err: any) {
       console.error(err);
       alert(err.message ?? "Failed to delete item");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -123,6 +133,13 @@ export default function HistoryPage() {
         isOpen={Boolean(checkInItem)}
         item={checkInItem!}
         onClose={() => setCheckInItem(null)}
+      />
+      <DeleteConfirmModal
+        isOpen={Boolean(deleteItem)}
+        item={deleteItem}
+        onCancel={() => setDeleteItem(null)}
+        onConfirm={confirmDelete}
+        deleting={deleting}
       />
     </div>
   );

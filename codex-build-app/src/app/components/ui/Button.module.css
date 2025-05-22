@@ -24,6 +24,11 @@
   border: 1px solid currentColor;
 }
 
+.danger {
+  background: var(--danger);
+  color: #fff;
+}
+
 @media (hover: hover) and (pointer: fine) {
   .primary:hover {
     opacity: 0.9;
@@ -32,12 +37,19 @@
   .secondary:hover {
     background: rgba(0, 0, 0, 0.05);
   }
+
+  .danger:hover {
+    opacity: 0.9;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
   @media (hover: hover) and (pointer: fine) {
     .secondary:hover {
       background: rgba(255, 255, 255, 0.1);
+    }
+    .danger:hover {
+      opacity: 0.9;
     }
   }
 }
