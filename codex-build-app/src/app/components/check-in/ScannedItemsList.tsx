@@ -17,7 +17,13 @@ export function ScannedItemsList() {
       {pendingItems.map((item) => (
         <li key={item._id} style={{ marginBottom: "1rem" }}>
           <div>
+            <strong>Name:</strong> {item.name}
+          </div>
+          <div>
             <strong>Barcode:</strong> {item.barcode}
+          </div>
+          <div>
+            <strong>Quantity:</strong> {item.quantity}
           </div>
           <div>
             <strong>Scanned:</strong>{" "}
