@@ -1,0 +1,22 @@
+.input {
+  appearance: none;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  font: inherit;
+  color: inherit;
+  background: var(--background);
+  transition: border-color 0.2s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--foreground);
+}
+
+@media (prefers-color-scheme: dark) {
+  .input {
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+}
