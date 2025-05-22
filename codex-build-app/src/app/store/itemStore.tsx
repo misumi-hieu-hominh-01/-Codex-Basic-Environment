@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import type { Item } from '../types';
 
 export interface ItemStore {
@@ -16,12 +16,20 @@ const ItemStoreContext = createContext<ItemStore | undefined>(undefined);
 export function ItemStoreProvider({ children }: { children: ReactNode }) {
   const [items, setItemsState] = useState<Item[]>([]);
 
-  const setItems = (items: Item[]) => setItemsState(items);
-  const addItem = (item: Item) => setItemsState(prev => [...prev, item]);
-  const updateItem = (item: Item) =>
-    setItemsState(prev => prev.map(i => (i._id === item._id ? item : i)));
-  const removeItem = (id: string) =>
-    setItemsState(prev => prev.filter(i => i._id !== id));
+  const setItems = useCallback((items: Item[]) => setItemsState(items), []);
+  const addItem = useCallback(
+    (item: Item) => setItemsState(prev => [...prev, item]),
+    [],
+  );
+  const updateItem = useCallback(
+    (item: Item) =>
+      setItemsState(prev => prev.map(i => (i._id === item._id ? item : i))),
+    [],
+  );
+  const removeItem = useCallback(
+    (id: string) => setItemsState(prev => prev.filter(i => i._id !== id)),
+    [],
+  );
 
   const value: ItemStore = {
     items,
