@@ -4,6 +4,11 @@ import { useEffect, useState } from "react";
 import { fetchItems } from "../../lib/storageService";
 import { useItemStore } from "../../store/itemStore";
 import { HistoryItemCard } from "../../components/history/HistoryItemCard";
+import styles from "./page.module.css";
+
+/**
+ * Displays the history of scanned items in a responsive grid of cards.
+ */
 
 export default function HistoryPage() {
   const { items, setItems } = useItemStore();
@@ -44,11 +49,13 @@ export default function HistoryPage() {
   );
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+    <div className={styles.page}>
       <h1>Item History</h1>
-      {sorted.map((item) => (
-        <HistoryItemCard key={item._id} item={item} />
-      ))}
+      <div className={styles.grid}>
+        {sorted.map((item) => (
+          <HistoryItemCard key={item._id} item={item} />
+        ))}
+      </div>
     </div>
   );
 }
