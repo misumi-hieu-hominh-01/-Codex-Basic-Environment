@@ -3,6 +3,7 @@
 import { useState, FormEvent } from 'react';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
+import styles from './ManualBarcodeEntry.module.css';
 
 interface ManualBarcodeEntryProps {
   onSubmit?: (barcode: string) => void;
@@ -19,10 +20,10 @@ export function ManualBarcodeEntry({ onSubmit }: ManualBarcodeEntryProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '0.5rem' }}>
+    <form onSubmit={handleSubmit} className={styles.form}>
       <Input
         value={barcode}
-        onChange={e => setBarcode(e.target.value)}
+        onChange={(e) => setBarcode(e.target.value)}
         placeholder="Enter barcode"
       />
       <Button type="submit">Submit</Button>

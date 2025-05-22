@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Webcam from 'react-webcam';
+import styles from './BarcodeScanner.module.css';
 
 interface BarcodeScannerProps {
   onBarcodeScanned?: (value: string) => void;
@@ -11,6 +12,7 @@ export function BarcodeScanner({ onBarcodeScanned }: BarcodeScannerProps) {
   const webcamRef = useRef<Webcam>(null);
   const [permission, setPermission] = useState<'pending' | 'granted' | 'denied'>('pending');
   const [lastBarcode, setLastBarcode] = useState<string | null>(null);
+  const [highlight, setHighlight] = useState(false);
 
   // Request camera permission on mount
   useEffect(() => {
@@ -71,6 +73,8 @@ export function BarcodeScanner({ onBarcodeScanned }: BarcodeScannerProps) {
             if (value && value !== lastBarcode) {
               setLastBarcode(value);
               onBarcodeScanned?.(value);
+              setHighlight(true);
+              setTimeout(() => setHighlight(false), 400);
             }
           }
         } catch (err) {
@@ -94,15 +98,17 @@ export function BarcodeScanner({ onBarcodeScanned }: BarcodeScannerProps) {
   }
 
   return (
-    <div>
+    <div className={`${styles.container} ${highlight ? styles.highlight : ''}`}>
       <Webcam
         ref={webcamRef}
         audio={false}
         screenshotFormat="image/png"
         videoConstraints={{ facingMode: { ideal: 'environment' } }}
-        style={{ width: '100%', height: 'auto' }}
+        className={styles.webcam}
       />
-      {lastBarcode && <div>Last scanned: {lastBarcode}</div>}
+      {lastBarcode && (
+        <div className={styles.last}>Last scanned: {lastBarcode}</div>
+      )}
     </div>
   );
 }

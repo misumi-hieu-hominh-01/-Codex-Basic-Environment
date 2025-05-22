@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Button } from "../../components/ui/Button";
 import { addItem as addItemApi } from "../../lib/storageService";
 import { useItemStore } from "../../store/itemStore";
+import styles from "./page.module.css";
 
 export default function CheckInPage() {
   const { addItem } = useItemStore();
@@ -32,16 +33,20 @@ export default function CheckInPage() {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-      <h1>Check-In Page</h1>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <BarcodeScanner onBarcodeScanned={(b) => handleBarcode(b, "scan")}/>
-      <ManualBarcodeEntry onSubmit={(b) => handleBarcode(b, "manual")}/>
-      <Link href="/history" style={{ alignSelf: "flex-start" }}>
-        <Button type="button" variant="secondary">
-          View History
-        </Button>
-      </Link>
+    <div className={styles.page}>
+      <h1>Check-In</h1>
+      {error && <p className={styles.error}>{error}</p>}
+      <div className={styles.content}>
+        <div className={styles.scanner}>
+          <BarcodeScanner onBarcodeScanned={(b) => handleBarcode(b, "scan")}/>
+        </div>
+        <div className={styles.controls}>
+          <ManualBarcodeEntry onSubmit={(b) => handleBarcode(b, "manual")}/>
+          <Link href="/history">
+            <Button type="button" variant="secondary">View History</Button>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

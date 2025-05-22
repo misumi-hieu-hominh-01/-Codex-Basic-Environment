@@ -1,0 +1,38 @@
+.container {
+  position: relative;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--background);
+}
+
+.webcam {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.last {
+  padding: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.highlight {
+  animation: flash 0.4s ease;
+  border-color: rgb(16, 185, 129);
+}
+
+@keyframes flash {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .container {
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+}
