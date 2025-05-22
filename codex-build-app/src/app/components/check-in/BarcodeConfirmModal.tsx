@@ -66,9 +66,7 @@ export function BarcodeConfirmModal({
             type="number"
             min={1}
             value={quantity}
-            onChange={(e) =>
-              setQuantity(Math.max(1, Number(e.target.value)))
-            }
+            onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
             className={styles.qtyInput}
           />
           <button
@@ -81,14 +79,14 @@ export function BarcodeConfirmModal({
           </button>
         </div>
         <div className={styles.actions}>
-          <Button onClick={handleConfirm} autoFocus>
-            Confirm
-          </Button>
           {onTryAgain && (
             <Button variant="secondary" onClick={onTryAgain}>
               Try Again
             </Button>
           )}
+          <Button onClick={handleConfirm} autoFocus>
+            Confirm
+          </Button>
         </div>
       </div>
     </Modal>

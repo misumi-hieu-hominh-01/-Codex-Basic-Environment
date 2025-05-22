@@ -11,6 +11,10 @@
   transition: box-shadow 0.2s;
 }
 
+.card:hover {
+  background-color: #0e1726;
+}
+
 @media (hover: hover) and (pointer: fine) {
   .card:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
