@@ -8,9 +8,8 @@ import {
 import type { Item } from "../../types";
 import { useItemStore } from "../../store/itemStore";
 import { HistoryItemCard } from "../../components/history/HistoryItemCard";
-import { Modal } from "../../components/ui/Modal";
+import { CheckInItemModal } from "../../components/history/CheckInItemModal";
 import { Input } from "../../components/ui/Input";
-import { ItemForm } from "../../components/items/ItemForm";
 import styles from "./page.module.css";
 
 /**
@@ -18,11 +17,11 @@ import styles from "./page.module.css";
  */
 
 export default function HistoryPage() {
-  const { items, setItems, updateItem, removeItem } = useItemStore();
+  const { items, setItems, removeItem } = useItemStore();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [editItem, setEditItem] = useState<Item | null>(null);
+  const [checkInItem, setCheckInItem] = useState<Item | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -49,12 +48,8 @@ export default function HistoryPage() {
     };
   }, [setItems]);
 
-  const handleEdit = (item: Item) => {
-    setEditItem(item);
-  };
-
-  const handleEditSuccess = () => {
-    setEditItem(null);
+  const handleCheckIn = (item: Item) => {
+    setCheckInItem(item);
   };
 
   const handleDelete = async (item: Item) => {
@@ -99,20 +94,17 @@ export default function HistoryPage() {
           <HistoryItemCard
             key={item._id}
             item={item}
-            onEdit={handleEdit}
+            onCheckIn={handleCheckIn}
             onDelete={handleDelete}
           />
         ))}
       </div>
 
-      <Modal isOpen={Boolean(editItem)} onClose={() => setEditItem(null)}>
-        {editItem && (
-          <div className={styles.modalContent}>
-            <h2 className={styles.modalTitle}>Edit Item</h2>
-            <ItemForm item={editItem} onSubmitSuccess={handleEditSuccess} />
-          </div>
-        )}
-      </Modal>
+      <CheckInItemModal
+        isOpen={Boolean(checkInItem)}
+        item={checkInItem!}
+        onClose={() => setCheckInItem(null)}
+      />
     </div>
   );
 }

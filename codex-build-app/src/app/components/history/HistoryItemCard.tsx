@@ -7,15 +7,11 @@ import styles from "./HistoryItemCard.module.css";
 
 interface HistoryItemCardProps {
   item: Item;
-  onEdit?: (item: Item) => void;
+  onCheckIn?: (item: Item) => void;
   onDelete?: (item: Item) => void;
 }
 
-export function HistoryItemCard({
-  item,
-  onEdit,
-  onDelete,
-}: HistoryItemCardProps) {
+export function HistoryItemCard({ item, onCheckIn, onDelete }: HistoryItemCardProps) {
   const { barcode, name, quantity, scannedAt, location } = item;
   const locationName =
     typeof location === "object" && location ? location.name : undefined;
@@ -38,16 +34,16 @@ export function HistoryItemCard({
           <span className={styles.label}>Location:</span> {locationName}
         </div>
       )}
-      {(onEdit || onDelete) && (
+      {(onCheckIn || onDelete) && (
         <div className={styles.actions}>
-          {onEdit && (
+          {onCheckIn && (
             <button
               type="button"
               className={styles.iconButton}
-              aria-label="Edit item"
-              onClick={() => onEdit(item)}
+              aria-label="Check in item"
+              onClick={() => onCheckIn(item)}
             >
-              🖋️
+              📥
             </button>
           )}
           {onDelete && (
