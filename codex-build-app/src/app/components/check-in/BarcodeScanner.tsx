@@ -2,6 +2,8 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
+import { Modal } from "../ui/Modal";
+import { Button } from "../ui/Button";
 import styles from "./BarcodeScanner.module.css";
 // Import the barcode-detector polyfill
 import "barcode-detector";
@@ -16,7 +18,19 @@ export function BarcodeScanner({ onBarcodeScanned }: BarcodeScannerProps) {
     "pending" | "granted" | "denied"
   >("pending");
   const [lastBarcode, setLastBarcode] = useState<string | null>(null);
+  const lastRef = useRef<string | null>(null);
   const [highlight, setHighlight] = useState(false);
+  const [pendingBarcode, setPendingBarcode] = useState<string | null>(null);
+  const [scanning, setScanning] = useState(true);
+
+  const confirmBarcode = () => {
+    if (!pendingBarcode) return;
+    onBarcodeScanned?.(pendingBarcode);
+    setLastBarcode(pendingBarcode);
+    lastRef.current = pendingBarcode;
+    setPendingBarcode(null);
+    setScanning(true);
+  };
 
   // Request camera permission on mount
   useEffect(() => {
@@ -62,6 +76,11 @@ export function BarcodeScanner({ onBarcodeScanned }: BarcodeScannerProps) {
     async function scanFrame() {
       if (!active || !barcodeDetector || !webcamRef.current) return;
 
+      if (!scanning) {
+        requestAnimationFrame(scanFrame);
+        return;
+      }
+
       const video = webcamRef.current.video;
       if (!video || video.readyState !== 4) {
         requestAnimationFrame(scanFrame);
@@ -74,9 +93,9 @@ export function BarcodeScanner({ onBarcodeScanned }: BarcodeScannerProps) {
 
         if (barcodes.length > 0) {
           const value = barcodes[0].rawValue;
-          if (value && value !== lastBarcode) {
-            setLastBarcode(value);
-            onBarcodeScanned?.(value);
+          if (value && value !== lastRef.current) {
+            setPendingBarcode(value);
+            setScanning(false);
             setHighlight(true);
             setTimeout(() => setHighlight(false), 400);
           }
@@ -93,7 +112,7 @@ export function BarcodeScanner({ onBarcodeScanned }: BarcodeScannerProps) {
     return () => {
       active = false;
     };
-  }, [permission, lastBarcode, onBarcodeScanned]);
+  }, [permission]);
 
   if (permission === "pending") {
     return <div>Requesting camera permission…</div>;
@@ -114,6 +133,47 @@ export function BarcodeScanner({ onBarcodeScanned }: BarcodeScannerProps) {
       {lastBarcode && (
         <div className={styles.last}>Last scanned: {lastBarcode}</div>
       )}
+      <Modal
+        isOpen={!!pendingBarcode}
+        onClose={() => {
+          setPendingBarcode(null);
+          setScanning(true);
+        }}
+      >
+        {pendingBarcode && (
+          <div
+            onKeyDown={e => {
+              if (e.key === "Enter") confirmBarcode();
+            }}
+          >
+            <div style={{ textAlign: "center", marginBottom: "1rem" }}>
+              <span style={{ fontSize: "2rem", color: "green" }}>✔</span>
+            </div>
+            <p style={{ marginBottom: "1rem", textAlign: "center" }}>
+              Detected barcode:
+              <br />
+              <strong>{pendingBarcode}</strong>
+            </p>
+            <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
+              <Button
+                onClick={confirmBarcode}
+                autoFocus
+              >
+                Confirm
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setPendingBarcode(null);
+                  setScanning(true);
+                }}
+              >
+                Try Again
+              </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }
