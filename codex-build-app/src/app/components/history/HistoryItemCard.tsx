@@ -16,12 +16,13 @@ export function HistoryItemCard({
   onCheckIn,
   onDelete,
 }: HistoryItemCardProps) {
-  const { barcode, quantity, scannedAt, location } = item;
+  const { barcode, name, quantity, scannedAt, location } = item;
   const locationName =
     typeof location === "object" && location ? location.name : undefined;
 
   return (
     <div className={styles.card}>
+      <h3 className={styles.name}>{name}</h3>
       <div className={styles.meta}>
         <span className={styles.label}>Barcode:</span> {barcode}
       </div>

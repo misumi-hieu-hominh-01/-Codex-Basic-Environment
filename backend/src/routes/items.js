@@ -62,6 +62,11 @@ router.post(
   "/",
   validate([
     body("barcode").isString().notEmpty().withMessage("barcode is required"),
+    body("name").optional().isString().withMessage("name must be a string"),
+    body("quantity")
+      .optional()
+      .isNumeric()
+      .withMessage("quantity must be a number"),
     body("metadata")
       .optional()
       .isObject()
@@ -73,8 +78,17 @@ router.post(
   ]),
   async (req, res, next) => {
     try {
-      const { barcode, metadata, locationId } = req.body;
+      const { barcode, name, quantity, metadata, locationId } = req.body;
       const data = { barcode, metadata };
+
+      if (name !== undefined) {
+        data.name = name;
+      }
+
+      if (quantity !== undefined) {
+        data.quantity = quantity;
+      }
+
       if (locationId) {
         data.location = locationId;
       }
@@ -96,6 +110,11 @@ router.put(
       .isString()
       .notEmpty()
       .withMessage("barcode must be string"),
+    body("name").optional().isString().withMessage("name must be a string"),
+    body("quantity")
+      .optional()
+      .isNumeric()
+      .withMessage("quantity must be a number"),
     body("metadata")
       .optional()
       .isObject()
