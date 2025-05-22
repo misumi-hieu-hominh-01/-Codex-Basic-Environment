@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import type { StorageLocation } from '../types';
 
 export interface LocationStore {
@@ -16,15 +16,19 @@ const LocationStoreContext = createContext<LocationStore | undefined>(undefined)
 export function LocationStoreProvider({ children }: { children: ReactNode }) {
   const [locations, setLocationsState] = useState<StorageLocation[]>([]);
 
-  const setLocations = (l: StorageLocation[]) => setLocationsState(l);
-  const addLocation = (loc: StorageLocation) =>
-    setLocationsState(prev => [...prev, loc]);
-  const updateLocation = (loc: StorageLocation) =>
+  // Use useCallback for stable function references
+  const setLocations = useCallback((l: StorageLocation[]) => setLocationsState(l), []);
+  
+  const addLocation = useCallback((loc: StorageLocation) =>
+    setLocationsState(prev => [...prev, loc]), []);
+  
+  const updateLocation = useCallback((loc: StorageLocation) =>
     setLocationsState(prev =>
       prev.map(l => (l._id === loc._id ? loc : l)),
-    );
-  const removeLocation = (id: string) =>
-    setLocationsState(prev => prev.filter(l => l._id !== id));
+    ), []);
+  
+  const removeLocation = useCallback((id: string) =>
+    setLocationsState(prev => prev.filter(l => l._id !== id)), []);
 
   const value: LocationStore = {
     locations,
