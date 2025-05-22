@@ -13,6 +13,9 @@ export default function StoragePage() {
         <Link href="/storage/new">
           <Button type="button">Add New Storage Location</Button>
         </Link>
+        <Link href="/storage/items">
+          <Button type="button" variant="secondary">View Stored Items</Button>
+        </Link>
       </div>
       <LocationsList />
     </div>
