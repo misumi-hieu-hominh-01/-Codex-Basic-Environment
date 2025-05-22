@@ -11,7 +11,9 @@
   "dependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "next": "15.3.2"
+    "next": "15.3.2",
+    "react-webcam": "^8.0.1",
+    "@undecaf/barcode-detector-polyfill": "^1.1.0"
   },
   "devDependencies": {
     "typescript": "^5",
