@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { ManualBarcodeEntry } from "../../components/check-in/ManualBarcodeEntry";
 import { BarcodeScanner } from "../../components/check-in/BarcodeScanner";
-import { ScannedItemsList } from "../../components/check-in/ScannedItemsList";
+import Link from "next/link";
+import { Button } from "../../components/ui/Button";
 import { addItem as addItemApi } from "../../lib/storageService";
 import { useItemStore } from "../../store/itemStore";
 
@@ -36,7 +37,11 @@ export default function CheckInPage() {
       {error && <p style={{ color: "red" }}>{error}</p>}
       <BarcodeScanner onBarcodeScanned={(b) => handleBarcode(b, "scan")}/>
       <ManualBarcodeEntry onSubmit={(b) => handleBarcode(b, "manual")}/>
-      <ScannedItemsList />
+      <Link href="/history" style={{ alignSelf: "flex-start" }}>
+        <Button type="button" variant="secondary">
+          View History
+        </Button>
+      </Link>
     </div>
   );
 }
