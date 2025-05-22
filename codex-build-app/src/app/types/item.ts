@@ -11,6 +11,8 @@ export interface Item {
   barcode: string;
   /** Date the barcode was scanned */
   scannedAt: string | Date;
+  /** Arbitrary metadata associated with the item */
+  metadata?: Record<string, unknown>;
   /**
    * The location may be populated with a StorageLocation when retrieved from
    * the backend, or just contain the location id as a string. It can also be
