@@ -1,3 +1,108 @@
-export function LocationForm() {
-  return <div>Location Form</div>;
+"use client";
+
+import { FormEvent, useState } from "react";
+import { Input } from "../ui/Input";
+import { Button } from "../ui/Button";
+import { addLocation, updateLocation } from "../../lib/storageService";
+import { useLocationStore } from "../../store/locationStore";
+import type { StorageLocation } from "../../types";
+
+interface LocationFormProps {
+  /** Existing location (for edit forms). */
+  location?: StorageLocation;
+  /** Callback fired when the location is successfully saved. */
+  onSubmitSuccess?: (loc: StorageLocation) => void;
+}
+
+export function LocationForm({ location, onSubmitSuccess }: LocationFormProps) {
+  const isEditing = Boolean(location);
+  const [name, setName] = useState(location?.name ?? "");
+  const [description, setDescription] = useState(location?.description ?? "");
+  const [file, setFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const { addLocation: addToStore, updateLocation: updateInStore } =
+    useLocationStore();
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) {
+      setError("Name is required");
+      return;
+    }
+
+    setError(null);
+    setLoading(true);
+
+    try {
+      let payload: FormData | Partial<StorageLocation>;
+      if (file) {
+        const formData = new FormData();
+        formData.append("name", name);
+        if (description) formData.append("description", description);
+        formData.append("image", file);
+        payload = formData;
+      } else {
+        payload = { name, description };
+      }
+
+      let saved: StorageLocation;
+      if (isEditing && location) {
+        saved = await updateLocation(location._id, payload);
+        updateInStore(saved);
+      } else {
+        saved = await addLocation(payload);
+        addToStore(saved);
+      }
+
+      onSubmitSuccess?.(saved);
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message ?? "Failed to save location");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}
+    >
+      <label>
+        Name
+        <Input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+      </label>
+      <label>
+        Description
+        <Input
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+      </label>
+      <label>
+        Image
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setFile(e.target.files?.[0] || null)}
+        />
+      </label>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      <Button type="submit" disabled={loading}>
+        {loading
+          ? isEditing
+            ? "Saving..."
+            : "Creating..."
+          : isEditing
+          ? "Save Location"
+          : "Create Location"}
+      </Button>
+    </form>
+  );
 }
