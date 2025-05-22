@@ -28,7 +28,7 @@ export default function StoragePage() {
 
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
         <div className={modalStyles.page}>
-          <h1>Add New Storage Location</h1>
+          <h3>Add New Storage Location</h3>
           <div className={modalStyles.formWrapper}>
             <LocationForm onSubmitSuccess={handleSubmitSuccess} />
           </div>

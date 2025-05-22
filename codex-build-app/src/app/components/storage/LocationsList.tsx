@@ -25,9 +25,9 @@ export function LocationsList({ onSelectLocation }: LocationsListProps) {
   useEffect(() => {
     // Skip fetching if we've already loaded successfully
     if (hasLoaded) return;
-    
+
     let active = true;
-    
+
     const loadLocations = async () => {
       try {
         const locs = await fetchLocations();
@@ -37,7 +37,9 @@ export function LocationsList({ onSelectLocation }: LocationsListProps) {
       } catch (err) {
         console.error(err);
         if (!active) return;
-        setError(err instanceof Error ? err.message : "Failed to load locations");
+        setError(
+          err instanceof Error ? err.message : "Failed to load locations"
+        );
       } finally {
         if (active) {
           setLoading(false);
@@ -53,7 +55,11 @@ export function LocationsList({ onSelectLocation }: LocationsListProps) {
   }, [setLocations, hasLoaded]); // hasLoaded prevents re-runs after initial load // setLocations is now stable with useCallback
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingSkeleton} aria-hidden="true" />
+      </div>
+    );
   }
 
   if (error) {

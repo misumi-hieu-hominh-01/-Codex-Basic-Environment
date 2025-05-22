@@ -4,6 +4,28 @@
   grid-template-columns: repeat(1, minmax(0, 1fr));
 }
 
+.loadingContainer {
+  display: flex;
+}
+
+.loadingSkeleton {
+  background: linear-gradient(90deg, #333 25%, #444 50%, #333 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 8px;
+  height: 150px;
+  width: 100%;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
 @media (min-width: 640px) {
   .list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
