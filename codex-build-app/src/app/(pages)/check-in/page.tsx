@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ManualBarcodeEntry } from "../../components/check-in/ManualBarcodeEntry";
 import { BarcodeScanner } from "../../components/check-in/BarcodeScanner";
+import { ScannedItemsList } from "../../components/check-in/ScannedItemsList";
 import { addItem as addItemApi } from "../../lib/storageService";
 import { useItemStore } from "../../store/itemStore";
 
@@ -26,11 +27,12 @@ export default function CheckInPage() {
   };
 
   return (
-    <div>
+    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
       <h1>Check-In Page</h1>
       {error && <p style={{ color: "red" }}>{error}</p>}
       <BarcodeScanner onBarcodeScanned={(b) => handleBarcode(b, "scan")}/>
       <ManualBarcodeEntry onSubmit={(b) => handleBarcode(b, "manual")}/>
+      <ScannedItemsList />
     </div>
   );
 }
