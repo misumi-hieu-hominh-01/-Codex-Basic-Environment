@@ -1,14 +1,15 @@
 interface StoreItemPageProps {
-  params: {
+  params: Promise<{
     barcode: string;
-  };
+  }>;
 }
 
-export default function StoreItemPage({ params }: StoreItemPageProps) {
+export default async function StoreItemPage({ params }: StoreItemPageProps) {
+  const { barcode } = await params;
   return (
     <div>
       <h1>Store Item Page</h1>
-      <p>Barcode: {params.barcode}</p>
+      <p>Barcode: {barcode}</p>
     </div>
   );
 }

@@ -22,11 +22,10 @@ export function Modal({
   className = "",
   ...props
 }: ModalProps) {
-  // Don't render anything if the modal isn't open
-  if (!isOpen) return null;
-
   // Close when the Escape key is pressed
   useEffect(() => {
+    if (!isOpen) return;
+    
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         onClose?.();
@@ -34,7 +33,10 @@ export function Modal({
     };
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
-  }, [onClose]);
+  }, [isOpen, onClose]);
+
+  // Don't render anything if the modal isn't open
+  if (!isOpen) return null;
 
   const modalClasses = [styles.modal, className].filter(Boolean).join(" ");
 

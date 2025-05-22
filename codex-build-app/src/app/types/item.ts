@@ -4,7 +4,7 @@ export interface Item {
   _id: string;
   barcode: string;
   scannedAt: string | Date;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
   location?: StorageLocation | string | null;
   /**
    * Indicates how the item was added on the client.
