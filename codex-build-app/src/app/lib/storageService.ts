@@ -1,4 +1,4 @@
-import type { StorageLocation } from '../types';
+import type { Item, StorageLocation } from '../types';
 
 const BASE_API_URL = 'http://localhost:5001/api';
 
@@ -24,4 +24,47 @@ export async function saveLocation(location: StorageLocation) {
     method: 'POST',
     body: JSON.stringify(location),
   });
+}
+
+export async function fetchItems(filters?: {
+  unassigned?: boolean;
+  barcode?: string;
+}): Promise<Item[]> {
+  const params = new URLSearchParams();
+  if (filters?.unassigned) params.append('unassigned', 'true');
+  if (filters?.barcode) params.append('barcode', filters.barcode);
+  const query = params.toString();
+  const path = `/items${query ? `?${query}` : ''}`;
+  return apiFetch<Item[]>(path);
+}
+
+export async function fetchItemById(id: string): Promise<Item> {
+  return apiFetch<Item>(`/items/${id}`);
+}
+
+export async function addItem(itemData: {
+  barcode: string;
+  scannedAt: Date;
+  metadata?: any;
+  source?: 'scan' | 'manual';
+}): Promise<Item> {
+  const payload = { ...itemData, scannedAt: itemData.scannedAt.toISOString() };
+  return apiFetch<Item>('/items', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateItem(
+  id: string,
+  itemData: Partial<Item>,
+): Promise<Item> {
+  return apiFetch<Item>(`/items/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(itemData),
+  });
+}
+
+export async function deleteItem(id: string): Promise<void> {
+  await apiFetch(`/items/${id}`, { method: 'DELETE' });
 }
