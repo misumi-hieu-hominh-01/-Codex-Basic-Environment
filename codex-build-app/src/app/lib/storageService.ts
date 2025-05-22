@@ -53,15 +53,22 @@ export async function fetchItemById(id: string): Promise<Item> {
 
 export async function addItem(itemData: {
   barcode: string;
+  /** Human readable item name */
   name: string;
+  /** How many of this item are being checked in */
   quantity: number;
   scannedAt: Date;
-  metadata?: any;
+  metadata?: Item["metadata"];
   source?: "scan" | "manual";
 }): Promise<Item> {
+  const { barcode, name, quantity, scannedAt, metadata, source } = itemData;
   const payload = {
-    ...itemData,
-    scannedAt: itemData.scannedAt.toISOString(),
+    barcode,
+    name,
+    quantity,
+    scannedAt: scannedAt.toISOString(),
+    metadata,
+    source,
   };
   return apiFetch<Item>("/items", {
     method: "POST",
