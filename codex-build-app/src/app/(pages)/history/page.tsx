@@ -18,10 +18,16 @@ export default function HistoryPage() {
         setItems(data);
         setLoading(false);
       })
-      .catch((err: any) => {
+      .catch((err) => {
         console.error(err);
         if (!active) return;
-        setError(err.message ?? "Failed to load items");
+        let message = "Failed to load items";
+        if (err instanceof Error) {
+          message = err.message;
+        } else if (typeof err === "string") {
+          message = err;
+        }
+        setError(message);
         setLoading(false);
       });
     return () => {
