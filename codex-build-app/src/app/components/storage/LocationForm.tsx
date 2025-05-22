@@ -6,6 +6,9 @@ import { Button } from "../ui/Button";
 import { addLocation, updateLocation } from "../../lib/storageService";
 import { useLocationStore } from "../../store/locationStore";
 import type { StorageLocation } from "../../types";
+import styles from "./LocationForm.module.css";
+
+const DEFAULT_IMAGE_URL = "/defaultS.png";
 
 interface LocationFormProps {
   /** Existing location (for edit forms). */
@@ -19,6 +22,7 @@ export function LocationForm({ location, onSubmitSuccess }: LocationFormProps) {
   const [name, setName] = useState(location?.name ?? "");
   const [description, setDescription] = useState(location?.description ?? "");
   const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(location?.imageUrl || null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -66,11 +70,8 @@ export function LocationForm({ location, onSubmitSuccess }: LocationFormProps) {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}
-    >
-      <label>
+    <form onSubmit={handleSubmit} className={styles.form}>
+      <label className={styles.field}>
         Name
         <Input
           value={name}
@@ -78,22 +79,31 @@ export function LocationForm({ location, onSubmitSuccess }: LocationFormProps) {
           required
         />
       </label>
-      <label>
+      <label className={styles.field}>
         Description
         <Input
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
       </label>
-      <label>
+      <label className={styles.field}>
         Image
         <input
           type="file"
           accept="image/*"
-          onChange={(e) => setFile(e.target.files?.[0] || null)}
+          onChange={(e) => {
+            const f = e.target.files?.[0] || null;
+            setFile(f);
+            setPreview(f ? URL.createObjectURL(f) : null);
+          }}
+        />
+        <img
+          className={styles.preview}
+          src={preview || DEFAULT_IMAGE_URL}
+          alt="Preview"
         />
       </label>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className={styles.error}>{error}</p>}
       <Button type="submit" disabled={loading}>
         {loading
           ? isEditing

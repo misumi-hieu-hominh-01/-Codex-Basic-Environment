@@ -1,0 +1,42 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: var(--surface);
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.preview {
+  width: 100%;
+  max-height: 12rem;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #111;
+}
+
+.error {
+  color: red;
+}
+
+@media (min-width: 640px) {
+  .form {
+    padding: 1.5rem;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .preview {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: #333;
+  }
+}
