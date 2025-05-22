@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchItems, deleteItem as deleteItemApi } from "../../lib/storageService";
+import {
+  fetchItems,
+  deleteItem as deleteItemApi,
+} from "../../lib/storageService";
 import type { Item } from "../../types";
 import { useItemStore } from "../../store/itemStore";
 import { HistoryItemCard } from "../../components/history/HistoryItemCard";
@@ -70,7 +73,7 @@ export default function HistoryPage() {
   if (items.length === 0) return <div>No items found.</div>;
 
   const sorted = [...items].sort(
-    (a, b) => new Date(b.scannedAt).getTime() - new Date(a.scannedAt).getTime()
+    (a, b) => new Date(b.scannedAt).getTime() - new Date(a.scannedAt).getTime(),
   );
   const filtered = sorted.filter((it) => {
     const term = search.toLowerCase();
@@ -104,8 +107,8 @@ export default function HistoryPage() {
 
       <Modal isOpen={Boolean(editItem)} onClose={() => setEditItem(null)}>
         {editItem && (
-          <div style={{ padding: "1rem" }}>
-            <h2>Edit Item</h2>
+          <div className={styles.modalContent}>
+            <h2 className={styles.modalTitle}>Edit Item</h2>
             <ItemForm item={editItem} onSubmitSuccess={handleEditSuccess} />
           </div>
         )}

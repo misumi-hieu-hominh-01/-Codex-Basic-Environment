@@ -19,6 +19,8 @@
   overflow-y: auto;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   animation: scaleIn 0.2s ease-out;
+  border-color: #fff3;
+  border: 1px solid;
 }
 
 @keyframes fadeIn {
