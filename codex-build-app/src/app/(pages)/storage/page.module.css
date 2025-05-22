@@ -13,11 +13,22 @@
   gap: 1rem;
 }
 
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 @media (min-width: 640px) {
   .header {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+  }
+
+  .controls {
+    flex-direction: row;
+    align-items: center;
   }
 }
 
