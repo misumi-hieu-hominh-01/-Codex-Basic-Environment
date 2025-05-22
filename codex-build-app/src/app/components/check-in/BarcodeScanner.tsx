@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
-import React, { useEffect, useRef, useState } from 'react';
-import Webcam from 'react-webcam';
-import styles from './BarcodeScanner.module.css';
+import React, { useEffect, useRef, useState } from "react";
+import Webcam from "react-webcam";
+import styles from "./BarcodeScanner.module.css";
+// Import the barcode-detector polyfill
+import "barcode-detector";
 
 interface BarcodeScannerProps {
   onBarcodeScanned?: (value: string) => void;
@@ -10,7 +12,9 @@ interface BarcodeScannerProps {
 
 export function BarcodeScanner({ onBarcodeScanned }: BarcodeScannerProps) {
   const webcamRef = useRef<Webcam>(null);
-  const [permission, setPermission] = useState<'pending' | 'granted' | 'denied'>('pending');
+  const [permission, setPermission] = useState<
+    "pending" | "granted" | "denied"
+  >("pending");
   const [lastBarcode, setLastBarcode] = useState<string | null>(null);
   const [highlight, setHighlight] = useState(false);
 
@@ -19,10 +23,10 @@ export function BarcodeScanner({ onBarcodeScanned }: BarcodeScannerProps) {
     async function requestPermission() {
       try {
         await navigator.mediaDevices.getUserMedia({ video: true });
-        setPermission('granted');
+        setPermission("granted");
       } catch (err) {
-        console.error('Camera permission denied', err);
-        setPermission('denied');
+        console.error("Camera permission denied", err);
+        setPermission("denied");
       }
     }
 
@@ -31,56 +35,57 @@ export function BarcodeScanner({ onBarcodeScanned }: BarcodeScannerProps) {
 
   // Barcode detection logic
   useEffect(() => {
-    if (permission !== 'granted') return;
+    if (permission !== "granted") return;
 
     let active = true;
-    let detector: any;
+    let barcodeDetector: BarcodeDetector | null = null;
 
     async function initDetector() {
-      if ('BarcodeDetector' in window) {
-        detector = new (window as any).BarcodeDetector({ formats: ['ean_13', 'qr_code', 'code_128'] });
-      } else {
-        try {
-          const mod = await import('@undecaf/barcode-detector-polyfill');
-          detector = new mod.BarcodeDetectorPolyfill({ formats: ['ean_13', 'qr_code', 'code_128'] });
-        } catch (e) {
-          console.error('Failed to load BarcodeDetector polyfill', e);
-          return;
+      try {
+        // Check if BarcodeDetector is available and supported
+        if (
+          "BarcodeDetector" in window &&
+          (await BarcodeDetector.getSupportedFormats())
+        ) {
+          barcodeDetector = new BarcodeDetector({
+            formats: ["ean_13", "qr_code", "code_128"],
+          });
+          scanFrame();
+        } else {
+          console.error("BarcodeDetector is not supported in this browser");
         }
+      } catch (e) {
+        console.error("Failed to initialize BarcodeDetector:", e);
       }
-      scanFrame();
     }
 
     async function scanFrame() {
-      if (!active || !detector || !webcamRef.current) return;
+      if (!active || !barcodeDetector || !webcamRef.current) return;
+
       const video = webcamRef.current.video;
       if (!video || video.readyState !== 4) {
         requestAnimationFrame(scanFrame);
         return;
       }
 
-      const canvas = document.createElement('canvas');
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        try {
-          const bitmap = await createImageBitmap(canvas);
-          const barcodes = await detector.detect(bitmap);
-          if (barcodes.length > 0) {
-            const value = barcodes[0].rawValue;
-            if (value && value !== lastBarcode) {
-              setLastBarcode(value);
-              onBarcodeScanned?.(value);
-              setHighlight(true);
-              setTimeout(() => setHighlight(false), 400);
-            }
+      try {
+        // Directly detect barcodes from the video element
+        const barcodes = await barcodeDetector.detect(video);
+
+        if (barcodes.length > 0) {
+          const value = barcodes[0].rawValue;
+          if (value && value !== lastBarcode) {
+            setLastBarcode(value);
+            onBarcodeScanned?.(value);
+            setHighlight(true);
+            setTimeout(() => setHighlight(false), 400);
           }
-        } catch (err) {
-          console.error('Barcode detection error', err);
         }
+      } catch (err) {
+        console.error("Barcode detection error:", err);
       }
+
+      // Continue scanning
       requestAnimationFrame(scanFrame);
     }
 
@@ -90,20 +95,20 @@ export function BarcodeScanner({ onBarcodeScanned }: BarcodeScannerProps) {
     };
   }, [permission, lastBarcode, onBarcodeScanned]);
 
-  if (permission === 'pending') {
+  if (permission === "pending") {
     return <div>Requesting camera permission…</div>;
   }
-  if (permission === 'denied') {
+  if (permission === "denied") {
     return <div>Camera access denied.</div>;
   }
 
   return (
-    <div className={`${styles.container} ${highlight ? styles.highlight : ''}`}>
+    <div className={`${styles.container} ${highlight ? styles.highlight : ""}`}>
       <Webcam
         ref={webcamRef}
         audio={false}
         screenshotFormat="image/png"
-        videoConstraints={{ facingMode: { ideal: 'environment' } }}
+        videoConstraints={{ facingMode: { ideal: "environment" } }}
         className={styles.webcam}
       />
       {lastBarcode && (
