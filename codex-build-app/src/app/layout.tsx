@@ -31,9 +31,9 @@ export default function RootLayout({
         <StoreProvider>
           <header>
             <Navbar />
-            <MobileMenu />
           </header>
           <main>{children}</main>
+          <MobileMenu />
         </StoreProvider>
       </body>
     </html>
