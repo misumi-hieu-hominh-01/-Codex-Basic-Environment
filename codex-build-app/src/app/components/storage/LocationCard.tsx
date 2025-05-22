@@ -1,4 +1,5 @@
 import type { StorageLocation } from "../../types";
+import styles from "./LocationCard.module.css";
 
 interface LocationCardProps {
   /** Location data to display */
@@ -9,16 +10,12 @@ export function LocationCard({ location }: LocationCardProps) {
   const { imageUrl, name, description } = location;
 
   return (
-    <div>
+    <div className={styles.card}>
       {imageUrl && (
-        <img
-          src={imageUrl}
-          alt={name}
-          style={{ width: "100%", height: "auto" }}
-        />
+        <img className={styles.image} src={imageUrl} alt={name} />
       )}
-      <h3>{name}</h3>
-      {description && <p>{description}</p>}
+      <h3 className={styles.name}>{name}</h3>
+      {description && <p className={styles.description}>{description}</p>}
     </div>
   );
 }
