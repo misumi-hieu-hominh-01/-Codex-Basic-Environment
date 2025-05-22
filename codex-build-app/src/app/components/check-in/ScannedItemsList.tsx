@@ -17,13 +17,13 @@ export function ScannedItemsList() {
       {pendingItems.map((item) => (
         <li key={item._id} style={{ marginBottom: "1rem" }}>
           <div>
-            <strong>Name:</strong> {item.name}
+            <strong>Name:</strong> {item.name}{" "}
+            <span style={{ marginLeft: "0.5rem" }}>
+              <strong>Qty:</strong> {item.quantity}
+            </span>
           </div>
           <div>
             <strong>Barcode:</strong> {item.barcode}
-          </div>
-          <div>
-            <strong>Quantity:</strong> {item.quantity}
           </div>
           <div>
             <strong>Scanned:</strong>{" "}
