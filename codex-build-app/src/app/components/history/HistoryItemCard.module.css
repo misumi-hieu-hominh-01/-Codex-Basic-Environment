@@ -2,7 +2,7 @@
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   padding: 1rem;
-  background: var(--background);
+  background: var(--surface);
   color: var(--foreground);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   display: flex;
