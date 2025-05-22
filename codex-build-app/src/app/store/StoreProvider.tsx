@@ -1,8 +1,8 @@
-'use client'
+"use client";
 
-import { ReactNode } from 'react';
-import { ItemStoreProvider } from './itemStore';
-import { LocationStoreProvider } from './locationStore';
+import { ReactNode } from "react";
+import { ItemStoreProvider } from "./itemStore";
+import { LocationStoreProvider } from "./locationStore";
 
 export function StoreProvider({ children }: { children: ReactNode }) {
   return (

@@ -32,7 +32,9 @@ export function ItemStoreProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <ItemStoreContext.Provider value={value}>{children}</ItemStoreContext.Provider>
+    <ItemStoreContext.Provider value={value}>
+      {children}
+    </ItemStoreContext.Provider>
   );
 }
 
