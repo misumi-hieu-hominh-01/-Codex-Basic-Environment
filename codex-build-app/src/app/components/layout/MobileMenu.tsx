@@ -30,6 +30,9 @@ export function MobileMenu() {
           <Link href="/check-in" onClick={() => setOpen(false)} role="menuitem">
             Check-In
           </Link>
+          <Link href="/history" onClick={() => setOpen(false)} role="menuitem">
+            History
+          </Link>
           <Link href="/storage" onClick={() => setOpen(false)} role="menuitem">
             Storage
           </Link>

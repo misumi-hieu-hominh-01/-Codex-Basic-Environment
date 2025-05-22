@@ -10,6 +10,9 @@ export function Navbar() {
       <Link href="/check-in" className={styles.link}>
         Check-in
       </Link>
+      <Link href="/history" className={styles.link}>
+        History
+      </Link>
       <Link href="/storage" className={styles.link}>
         Storage
       </Link>
