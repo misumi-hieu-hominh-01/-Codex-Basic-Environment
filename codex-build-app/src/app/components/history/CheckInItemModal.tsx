@@ -44,7 +44,7 @@ export function CheckInItemModal({
     <>
       <Modal isOpen={isOpen} onClose={onClose} className={styles.modal}>
         <div className={styles.header}>
-          <h2 className={styles.title}>Choose Storage</h2>
+          <h2 className={styles.title}>Choose a Storage</h2>
           <button
             type="button"
             aria-label="Close"
