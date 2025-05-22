@@ -2,12 +2,14 @@
   appearance: none;
   width: 100%;
   padding: 0.5rem 0.75rem;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  border: 1px solid #cccccc;
   border-radius: 6px;
   font: inherit;
   color: inherit;
-  background: var(--background);
-  transition: border-color 0.2s;
+  background: #ffffff;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
 }
 
 .input:focus {
@@ -17,6 +19,7 @@
 
 @media (prefers-color-scheme: dark) {
   .input {
-    border-color: rgba(255, 255, 255, 0.3);
+    background: #1e1e1e;
+    border-color: #555555;
   }
 }
