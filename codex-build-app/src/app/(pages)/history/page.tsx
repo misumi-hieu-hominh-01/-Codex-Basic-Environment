@@ -75,7 +75,28 @@ export default function HistoryPage() {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.loadingHeader}>
+          <div className={styles.loadingTitle}></div>
+          <div className={styles.loadingControls}>
+            <div className={styles.loadingSearch}></div>
+            <div className={styles.loadingToggle}></div>
+          </div>
+        </div>
+        <div className={styles.loadingContainer}>
+          {[1, 2, 3, 4, 5, 6].map((index) => (
+            <div
+              key={index}
+              className={styles.loadingSkeleton}
+              aria-hidden="true"
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
   if (error) return <div style={{ color: "red" }}>{error}</div>;
   if (items.length === 0) return <div>No items found.</div>;
 

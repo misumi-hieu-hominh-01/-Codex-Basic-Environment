@@ -20,3 +20,9 @@
     justify-content: space-between;
   }
 }
+
+@media (max-width: 768px) {
+  .page {
+    padding-bottom: 60px;
+  }
+}

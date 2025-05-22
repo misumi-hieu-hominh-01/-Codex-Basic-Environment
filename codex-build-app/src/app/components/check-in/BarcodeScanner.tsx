@@ -89,26 +89,26 @@ export function BarcodeScanner({ onBarcodeScanned }: BarcodeScannerProps) {
 
       try {
         // Create a canvas to capture the current video frame
-        const canvas = document.createElement('canvas');
+        const canvas = document.createElement("canvas");
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
-        const ctx = canvas.getContext('2d');
-        
+        const ctx = canvas.getContext("2d");
+
         if (!ctx) {
           console.error("Could not get canvas context");
           requestAnimationFrame(scanFrame);
           return;
         }
-        
+
         // Draw the current video frame onto the canvas
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        
+
         // Create an ImageBitmap from the canvas
         const imageBitmap = await createImageBitmap(canvas);
-        
+
         // Detect barcodes from the ImageBitmap
         const barcodes = await barcodeDetector.detect(imageBitmap);
-        
+
         if (barcodes.length > 0) {
           const value = barcodes[0].rawValue;
           if (value && value !== lastRef.current) {
@@ -133,10 +133,32 @@ export function BarcodeScanner({ onBarcodeScanned }: BarcodeScannerProps) {
   }, [permission, scanning]);
 
   if (permission === "pending") {
-    return <div>Requesting camera permission…</div>;
+    return (
+      <div className={styles.statusContainer}>
+        <div className={styles.pendingStatus}>
+          <div className={styles.spinner}></div>
+          <div className={styles.statusMessage}>
+            Requesting camera permission…
+          </div>
+          <div className={styles.statusMessage}>
+            Please allow access when prompted
+          </div>
+        </div>
+      </div>
+    );
   }
   if (permission === "denied") {
-    return <div>Camera access denied.</div>;
+    return (
+      <div className={styles.statusContainer}>
+        <div className={styles.deniedStatus}>
+          <div className={styles.deniedIcon}>✕</div>
+          <div className={styles.statusMessage}>Camera access denied</div>
+          <div className={styles.statusMessage}>
+            Please check your browser permissions and try again
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -160,7 +182,7 @@ export function BarcodeScanner({ onBarcodeScanned }: BarcodeScannerProps) {
       >
         {pendingBarcode && (
           <div
-            onKeyDown={e => {
+            onKeyDown={(e) => {
               if (e.key === "Enter") confirmBarcode();
             }}
           >
@@ -172,11 +194,14 @@ export function BarcodeScanner({ onBarcodeScanned }: BarcodeScannerProps) {
               <br />
               <strong>{pendingBarcode}</strong>
             </p>
-            <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
-              <Button
-                onClick={confirmBarcode}
-                autoFocus
-              >
+            <div
+              style={{
+                display: "flex",
+                gap: "0.5rem",
+                justifyContent: "center",
+              }}
+            >
+              <Button onClick={confirmBarcode} autoFocus>
                 Confirm
               </Button>
               <Button
