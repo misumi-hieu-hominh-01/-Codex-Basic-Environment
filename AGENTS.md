@@ -90,6 +90,73 @@ Create a more intuitive and visually appealing check-in interface that:
    - Ensure proper TypeScript typing for all props and state
    - Follow established project patterns for styling and component structure
 
+### Task 3: Responsive Navigation Menu Improvement
+
+**Current State:**
+The application currently uses a hamburger menu button on both mobile and desktop views, with a persistent top navigation bar on mobile.
+
+**Improvement Goals:**
+Create a more device-appropriate navigation system that:
+- Removes the mobile menu button on desktop sizes
+- Displays horizontal navigation on desktop
+- Removes the top navbar on mobile devices
+- Improves overall navigation usability
+
+**Implementation Guidelines:**
+1. **Desktop Navigation**
+   - Remove the hamburger menu button completely
+   - Display all navigation links ("Home", "Check-in", "History", "Storage") horizontally in the header
+   - Add appropriate spacing between navigation items
+   - Implement visual indicators for the active page
+   - Add hover effects for better user feedback
+
+2. **Mobile Navigation**
+   - Remove the top navigation bar to save vertical space
+   - Implement a bottom navigation bar with icons and labels
+   - Use intuitive icons for each section
+   - Apply appropriate highlighting for the active section
+   - Ensure the bottom navigation is fixed and easily accessible
+
+3. **Code Structure**
+   - Update the MobileMenu.tsx and Navbar.tsx components
+   - Use CSS media queries for responsive behavior
+   - Ensure appropriate breakpoints (around 768px)
+   - Pay attention to tap target sizes on mobile (minimum 44×44px)
+
+### Task 4: Color Scheme Update
+
+**Current State:**
+The application currently uses a black background throughout the interface.
+
+**Improvement Goals:**
+Update the application to use a white background with appropriate adjustments to ensure content remains visible and accessible:
+- Change the global background from black to white
+- Update text colors for proper contrast on a white background
+- Maintain visual hierarchy and component distinction
+- Ensure consistent styling across the application
+
+**Implementation Guidelines:**
+1. **Global Background Change**
+   - In globals.css, update the background color from black to white (#FFFFFF)
+   - Change text colors from white to appropriate dark colors (e.g., #212121)
+   - Ensure sufficient contrast for accessibility
+
+2. **Component-Specific Updates**
+   - Review and update all component backgrounds
+   - For cards, consider light gray (#F5F5F5) or subtle gradients
+   - Maintain high contrast for buttons and interactive elements
+   - Update form elements with appropriate borders and focus states
+
+3. **Visual Hierarchy Maintenance**
+   - Use shadows and subtle borders for element separation
+   - Implement a refined color palette for different UI elements
+   - Ensure consistency across all pages and components
+
+4. **Code Structure**
+   - Primarily update globals.css
+   - Update component-specific CSS modules as needed
+   - Maintain the existing CSS module pattern
+
 ## Development Standards
 
 When implementing these improvements:
