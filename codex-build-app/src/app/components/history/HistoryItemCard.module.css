@@ -11,6 +11,7 @@
   flex-direction: column;
   gap: 0.25rem;
   transition: box-shadow 0.2s;
+  cursor: pointer;
 }
 
 @media (hover: hover) and (pointer: fine) {

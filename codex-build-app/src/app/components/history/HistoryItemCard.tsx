@@ -11,7 +11,11 @@ interface HistoryItemCardProps {
   onDelete?: (item: Item) => void;
 }
 
-export function HistoryItemCard({ item, onCheckIn, onDelete }: HistoryItemCardProps) {
+export function HistoryItemCard({
+  item,
+  onCheckIn,
+  onDelete,
+}: HistoryItemCardProps) {
   const { barcode, name, quantity, scannedAt, location } = item;
   const locationName =
     typeof location === "object" && location ? location.name : undefined;
@@ -36,14 +40,14 @@ export function HistoryItemCard({ item, onCheckIn, onDelete }: HistoryItemCardPr
       )}
       {(onCheckIn || onDelete) && (
         <div className={styles.actions}>
-          {onCheckIn && (
+          {onCheckIn && !locationName && (
             <button
               type="button"
               className={styles.iconButton}
               aria-label="Check in item"
               onClick={() => onCheckIn(item)}
             >
-              📥
+              📦
             </button>
           )}
           {onDelete && (
