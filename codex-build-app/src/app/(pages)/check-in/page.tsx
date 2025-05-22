@@ -14,12 +14,12 @@ export default function CheckInPage() {
   const handleBarcode = async (barcode: string, source: "scan" | "manual") => {
     setError(null);
     try {
+      const defaultName = `Item ${barcode}`;
+      const defaultQuantity = 1;
       const newItem = await addItemApi({
         barcode,
-        // TODO: Allow user to specify item name
-        name: `Item ${barcode}`,
-        // TODO: Allow user to specify quantity
-        quantity: 1,
+        name: defaultName,
+        quantity: defaultQuantity,
         scannedAt: new Date(),
         source,
       });
