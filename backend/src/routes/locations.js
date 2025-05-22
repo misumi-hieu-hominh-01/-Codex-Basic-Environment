@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { body, param, validationResult } from "express-validator";
-import Location from "../models/location.js";
+import Location from "../models/Location.js";
 import multer from "multer";
 import path from "path";
 import { saveImage, deleteImage } from "../utils/imageStorage.js";
@@ -9,7 +9,9 @@ const validate = (validations) => async (req, res, next) => {
   await Promise.all(validations.map((v) => v.run(req)));
   const errors = validationResult(req);
   if (errors.isEmpty()) return next();
-  return res.status(400).json({ message: "Validation failed", errors: errors.array() });
+  return res
+    .status(400)
+    .json({ message: "Validation failed", errors: errors.array() });
 };
 
 // Configure multer storage for development. In production, switch to Cloudinary.
@@ -58,7 +60,10 @@ router.post(
   upload.single("image"),
   validate([
     body("name").isString().notEmpty().withMessage("name is required"),
-    body("description").optional().isString().withMessage("description must be string"),
+    body("description")
+      .optional()
+      .isString()
+      .withMessage("description must be string"),
   ]),
   async (req, res, next) => {
     try {
@@ -67,17 +72,18 @@ router.post(
         description: req.body.description,
       };
 
-    if (req.file) {
-      // Upload image to Cloudinary and store returned URL
-      locationData.imageUrl = await saveImage(req.file);
-    }
+      if (req.file) {
+        // Upload image to Cloudinary and store returned URL
+        locationData.imageUrl = await saveImage(req.file);
+      }
 
-    const location = await Location.create(locationData);
-    res.status(201).json(location);
-  } catch (err) {
-    next(err);
+      const location = await Location.create(locationData);
+      res.status(201).json(location);
+    } catch (err) {
+      next(err);
+    }
   }
-});
+);
 
 // PUT /locations/:id - update location
 router.put(
@@ -85,8 +91,15 @@ router.put(
   upload.single("image"),
   validate([
     param("id").isMongoId().withMessage("Invalid location id"),
-    body("name").optional().isString().notEmpty().withMessage("name must be string"),
-    body("description").optional().isString().withMessage("description must be string"),
+    body("name")
+      .optional()
+      .isString()
+      .notEmpty()
+      .withMessage("name must be string"),
+    body("description")
+      .optional()
+      .isString()
+      .withMessage("description must be string"),
   ]),
   async (req, res, next) => {
     try {
@@ -95,23 +108,28 @@ router.put(
         return res.status(404).json({ message: "Location not found" });
       }
 
-    const updateData = { ...req.body };
+      const updateData = { ...req.body };
 
-    if (req.file) {
-      // Remove old image if present
-      await deleteImage(location.imageUrl);
-      // Save new image and store returned URL
-      updateData.imageUrl = await saveImage(req.file);
+      if (req.file) {
+        // Remove old image if present
+        await deleteImage(location.imageUrl);
+        // Save new image and store returned URL
+        updateData.imageUrl = await saveImage(req.file);
+      }
+
+      const updated = await Location.findByIdAndUpdate(
+        req.params.id,
+        updateData,
+        {
+          new: true,
+        }
+      );
+      res.json(updated);
+    } catch (err) {
+      next(err);
     }
-
-    const updated = await Location.findByIdAndUpdate(req.params.id, updateData, {
-      new: true,
-    });
-    res.json(updated);
-  } catch (err) {
-    next(err);
   }
-});
+);
 
 // DELETE /locations/:id - remove location
 router.delete(
