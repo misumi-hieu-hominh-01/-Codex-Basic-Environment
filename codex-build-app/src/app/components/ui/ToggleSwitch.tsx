@@ -18,19 +18,21 @@ export function ToggleSwitch({
   labels = ["Off", "On"],
   className = "",
 }: ToggleSwitchProps) {
-  const classes = [styles.switch, checked ? styles.on : styles.off, className]
+  const containerClasses = [styles.container, className]
+    .filter(Boolean)
+    .join(" ");
+  const switchClasses = [styles.switch, checked ? styles.on : styles.off]
     .filter(Boolean)
     .join(" ");
 
   const label = checked ? labels[1] : labels[0];
 
   return (
-    <button
-      type="button"
-      className={classes}
-      onClick={() => onChange?.(!checked)}
-    >
-      {label}
-    </button>
+    <div className={containerClasses} onClick={() => onChange?.(!checked)}>
+      <div className={switchClasses}>
+        <div className={styles.knob}></div>
+      </div>
+      <span className={styles.label}>{label}</span>
+    </div>
   );
 }

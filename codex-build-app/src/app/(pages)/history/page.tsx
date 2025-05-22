@@ -70,21 +70,23 @@ export default function HistoryPage() {
   if (items.length === 0) return <div>No items found.</div>;
 
   const sorted = [...items].sort(
-    (a, b) => new Date(b.scannedAt).getTime() - new Date(a.scannedAt).getTime(),
+    (a, b) => new Date(b.scannedAt).getTime() - new Date(a.scannedAt).getTime()
   );
   const searchFiltered = sorted.filter((it) => {
     const term = search.toLowerCase();
     const locName =
       typeof it.location === "object" && it.location ? it.location.name : "";
     return (
-      it.barcode.toLowerCase().includes(term) ||
-      it.name.toLowerCase().includes(term) ||
-      locName.toLowerCase().includes(term)
+      (it.barcode && it.barcode.toLowerCase().includes(term)) ||
+      (it.name && it.name.toLowerCase().includes(term)) ||
+      (locName && locName.toLowerCase().includes(term))
     );
   });
   const filtered = searchFiltered.filter((it) => {
     const hasLocation = !!(
-      it.location !== undefined && it.location !== null && it.location !== ""
+      it.location !== undefined &&
+      it.location !== null &&
+      it.location !== ""
     );
     return showStored ? hasLocation : !hasLocation;
   });
@@ -102,7 +104,7 @@ export default function HistoryPage() {
           <ToggleSwitch
             checked={showStored}
             onChange={setShowStored}
-            labels={["Show: Not Stored", "Show: Stored"]}
+            labels={["Stored", "Stored"]}
           />
         </div>
       </div>
