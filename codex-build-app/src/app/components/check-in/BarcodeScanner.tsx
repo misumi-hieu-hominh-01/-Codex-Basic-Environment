@@ -2,14 +2,13 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
-import { Modal } from "../ui/Modal";
-import { Button } from "../ui/Button";
+import { BarcodeConfirmModal } from "./BarcodeConfirmModal";
 import styles from "./BarcodeScanner.module.css";
 // Import the barcode-detector polyfill
 import "barcode-detector";
 
 interface BarcodeScannerProps {
-  onBarcodeScanned?: (value: string) => void;
+  onBarcodeScanned?: (value: string, quantity: number) => void;
 }
 
 export function BarcodeScanner({ onBarcodeScanned }: BarcodeScannerProps) {
@@ -23,9 +22,9 @@ export function BarcodeScanner({ onBarcodeScanned }: BarcodeScannerProps) {
   const [pendingBarcode, setPendingBarcode] = useState<string | null>(null);
   const [scanning, setScanning] = useState(true);
 
-  const confirmBarcode = () => {
+  const confirmBarcode = (qty: number) => {
     if (!pendingBarcode) return;
-    onBarcodeScanned?.(pendingBarcode);
+    onBarcodeScanned?.(pendingBarcode, qty);
     setLastBarcode(pendingBarcode);
     lastRef.current = pendingBarcode;
     setPendingBarcode(null);
@@ -173,50 +172,19 @@ export function BarcodeScanner({ onBarcodeScanned }: BarcodeScannerProps) {
       {lastBarcode && (
         <div className={styles.last}>Last scanned: {lastBarcode}</div>
       )}
-      <Modal
+      <BarcodeConfirmModal
+        barcode={pendingBarcode ?? ""}
         isOpen={!!pendingBarcode}
         onClose={() => {
           setPendingBarcode(null);
           setScanning(true);
         }}
-      >
-        {pendingBarcode && (
-          <div
-            onKeyDown={(e) => {
-              if (e.key === "Enter") confirmBarcode();
-            }}
-          >
-            <div style={{ textAlign: "center", marginBottom: "1rem" }}>
-              <span style={{ fontSize: "2rem", color: "green" }}>✔</span>
-            </div>
-            <p style={{ marginBottom: "1rem", textAlign: "center" }}>
-              Detected barcode:
-              <br />
-              <strong>{pendingBarcode}</strong>
-            </p>
-            <div
-              style={{
-                display: "flex",
-                gap: "0.5rem",
-                justifyContent: "center",
-              }}
-            >
-              <Button onClick={confirmBarcode} autoFocus>
-                Confirm
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  setPendingBarcode(null);
-                  setScanning(true);
-                }}
-              >
-                Try Again
-              </Button>
-            </div>
-          </div>
-        )}
-      </Modal>
+        onConfirm={(qty) => confirmBarcode(qty)}
+        onTryAgain={() => {
+          setPendingBarcode(null);
+          setScanning(true);
+        }}
+      />
     </div>
   );
 }
