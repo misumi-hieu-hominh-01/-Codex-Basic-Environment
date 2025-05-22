@@ -16,7 +16,11 @@ interface CheckInItemModalProps {
   onClose: () => void;
 }
 
-export function CheckInItemModal({ item, isOpen, onClose }: CheckInItemModalProps) {
+export function CheckInItemModal({
+  item,
+  isOpen,
+  onClose,
+}: CheckInItemModalProps) {
   const { updateItem: updateItemInStore } = useItemStore();
   const [showNewStorage, setShowNewStorage] = useState(false);
 
@@ -40,7 +44,7 @@ export function CheckInItemModal({ item, isOpen, onClose }: CheckInItemModalProp
     <>
       <Modal isOpen={isOpen} onClose={onClose} className={styles.modal}>
         <div className={styles.header}>
-          <h2 className={styles.title}>Check In Item</h2>
+          <h2 className={styles.title}>Save in Storage</h2>
           <button
             type="button"
             aria-label="Close"
