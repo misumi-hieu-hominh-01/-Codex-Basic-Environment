@@ -13,15 +13,18 @@ export default function CheckInPage() {
   const { addItem } = useItemStore();
   const [error, setError] = useState<string | null>(null);
 
-  const handleBarcode = async (barcode: string, source: "scan" | "manual") => {
+  const handleBarcode = async (
+    barcode: string,
+    quantity: number,
+    source: "scan" | "manual"
+  ) => {
     setError(null);
     try {
       const defaultName = `Item ${barcode}`;
-      const defaultQuantity = 1;
       const newItem = await addItemApi({
         barcode,
         name: defaultName,
-        quantity: defaultQuantity,
+        quantity,
         scannedAt: new Date(),
         source,
       });
@@ -38,10 +41,10 @@ export default function CheckInPage() {
       {error && <p className={styles.error}>{error}</p>}
       <div className={styles.content}>
         <div className={styles.scanner}>
-          <BarcodeScanner onBarcodeScanned={(b) => handleBarcode(b, "scan")}/>
+          <BarcodeScanner onBarcodeScanned={(b, q) => handleBarcode(b, q, "scan")}/>
         </div>
         <div className={styles.controls}>
-          <ManualBarcodeEntry onSubmit={(b) => handleBarcode(b, "manual")}/>
+          <ManualBarcodeEntry onSubmit={(b, q) => handleBarcode(b, q, "manual")}/>
           <Link href="/history">
             <Button type="button" variant="secondary">View History</Button>
           </Link>
