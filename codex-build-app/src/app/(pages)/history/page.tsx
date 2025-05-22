@@ -10,6 +10,7 @@ import { useItemStore } from "../../store/itemStore";
 import { HistoryItemCard } from "../../components/history/HistoryItemCard";
 import { CheckInItemModal } from "../../components/history/CheckInItemModal";
 import { Input } from "../../components/ui/Input";
+import { ToggleSwitch } from "../../components/ui/ToggleSwitch";
 import styles from "./page.module.css";
 
 /**
@@ -21,6 +22,7 @@ export default function HistoryPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [showStored, setShowStored] = useState(false);
   const [checkInItem, setCheckInItem] = useState<Item | null>(null);
 
   useEffect(() => {
@@ -68,27 +70,44 @@ export default function HistoryPage() {
   if (items.length === 0) return <div>No items found.</div>;
 
   const sorted = [...items].sort(
-    (a, b) => new Date(b.scannedAt).getTime() - new Date(a.scannedAt).getTime(),
+    (a, b) => new Date(b.scannedAt).getTime() - new Date(a.scannedAt).getTime()
   );
-  const filtered = sorted.filter((it) => {
+  const searchFiltered = sorted.filter((it) => {
     const term = search.toLowerCase();
     const locName =
       typeof it.location === "object" && it.location ? it.location.name : "";
     return (
-      it.barcode.toLowerCase().includes(term) ||
-      it.name.toLowerCase().includes(term) ||
-      locName.toLowerCase().includes(term)
+      (it.barcode && it.barcode.toLowerCase().includes(term)) ||
+      (it.name && it.name.toLowerCase().includes(term)) ||
+      (locName && locName.toLowerCase().includes(term))
     );
+  });
+  const filtered = searchFiltered.filter((it) => {
+    const hasLocation = !!(
+      it.location !== undefined &&
+      it.location !== null &&
+      it.location !== ""
+    );
+    return showStored ? hasLocation : !hasLocation;
   });
 
   return (
     <div className={styles.page}>
-      <h1>Item History</h1>
-      <Input
-        placeholder="Search..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+      <div className={styles.header}>
+        <h1>Item History</h1>
+        <div className={styles.controls}>
+          <Input
+            placeholder="Search..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <ToggleSwitch
+            checked={showStored}
+            onChange={setShowStored}
+            labels={["Stored", "Stored"]}
+          />
+        </div>
+      </div>
       <div className={styles.grid}>
         {filtered.map((item) => (
           <HistoryItemCard
