@@ -88,9 +88,27 @@ export function BarcodeScanner({ onBarcodeScanned }: BarcodeScannerProps) {
       }
 
       try {
-        // Directly detect barcodes from the video element
-        const barcodes = await barcodeDetector.detect(video);
-
+        // Create a canvas to capture the current video frame
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        
+        if (!ctx) {
+          console.error("Could not get canvas context");
+          requestAnimationFrame(scanFrame);
+          return;
+        }
+        
+        // Draw the current video frame onto the canvas
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        // Create an ImageBitmap from the canvas
+        const imageBitmap = await createImageBitmap(canvas);
+        
+        // Detect barcodes from the ImageBitmap
+        const barcodes = await barcodeDetector.detect(imageBitmap);
+        
         if (barcodes.length > 0) {
           const value = barcodes[0].rawValue;
           if (value && value !== lastRef.current) {
@@ -112,7 +130,7 @@ export function BarcodeScanner({ onBarcodeScanned }: BarcodeScannerProps) {
     return () => {
       active = false;
     };
-  }, [permission]);
+  }, [permission, scanning]);
 
   if (permission === "pending") {
     return <div>Requesting camera permission…</div>;
