@@ -140,11 +140,23 @@ export default function HistoryPage() {
       </div>
       {filtered.length === 0 ? (
         <div className={styles.emptyState}>
-          <svg className={styles.emptyIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M12 21a9 9 0 110-18 9 9 0 010 18z" />
+          <svg
+            className={styles.emptyIcon}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M12 21a9 9 0 110-18 9 9 0 010 18z"
+            />
           </svg>
           <p className={styles.emptyText}>No items found.</p>
-          <p className={styles.emptySubtext}>Try adjusting your search or toggle criteria.</p>
+          <p className={styles.emptySubtext}>
+            Try adjusting your search or toggle criteria.
+          </p>
         </div>
       ) : (
         <div className={styles.grid}>

@@ -16,7 +16,7 @@ export function HistoryItemCard({
   onCheckIn,
   onDelete,
 }: HistoryItemCardProps) {
-  const { barcode, name, quantity, scannedAt, location } = item;
+  const { barcode, name, quantity, scannedAt, location, checkInTime } = item;
   const locationName =
     typeof location === "object" && location ? location.name : undefined;
 
@@ -29,10 +29,17 @@ export function HistoryItemCard({
       <div className={styles.meta}>
         <span className={styles.label}>Quantity:</span> {quantity}
       </div>
-      <div className={styles.meta}>
-        <span className={styles.label}>Scanned:</span>{" "}
-        {new Date(scannedAt).toLocaleString()}
-      </div>
+      {checkInTime ? (
+        <div className={styles.meta}>
+          <span className={styles.label}>Checked In:</span>{" "}
+          {new Date(checkInTime).toLocaleString()}
+        </div>
+      ) : (
+        <div className={styles.meta}>
+          <span className={styles.label}>Scanned:</span>{" "}
+          {new Date(scannedAt).toLocaleString()}
+        </div>
+      )}
       {locationName && (
         <div className={styles.meta}>
           <span className={styles.label}>Location:</span> {locationName}

@@ -1,5 +1,6 @@
 .nav {
   display: none;
+  background-color: #010409;
 }
 
 @media (min-width: 768px) {

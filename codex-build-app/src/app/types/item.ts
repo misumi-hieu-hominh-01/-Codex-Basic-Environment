@@ -11,6 +11,8 @@ export interface Item {
   barcode: string;
   /** Date the barcode was scanned */
   scannedAt: string | Date;
+  /** Date the item was checked in to a location */
+  checkInTime?: string | Date | null;
   /** Arbitrary metadata associated with the item */
   metadata?: Record<string, unknown>;
   /**

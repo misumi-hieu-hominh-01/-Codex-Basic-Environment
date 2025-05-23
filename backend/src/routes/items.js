@@ -71,6 +71,10 @@ router.post(
       .optional()
       .isObject()
       .withMessage("metadata must be object"),
+    body("checkInTime")
+      .optional()
+      .isISO8601()
+      .withMessage("checkInTime must be a valid date in ISO format"),
     body("locationId")
       .optional()
       .isMongoId()
@@ -78,7 +82,7 @@ router.post(
   ]),
   async (req, res, next) => {
     try {
-      const { barcode, name, quantity, metadata, locationId } = req.body;
+      const { barcode, name, quantity, checkInTime, metadata, locationId } = req.body;
       const data = { barcode, metadata };
 
       if (name !== undefined) {
@@ -88,9 +92,17 @@ router.post(
       if (quantity !== undefined) {
         data.quantity = quantity;
       }
+      
+      if (checkInTime !== undefined) {
+        data.checkInTime = checkInTime;
+      }
 
       if (locationId) {
         data.location = locationId;
+        // Set checkInTime automatically if not already set but a location is provided
+        if (data.checkInTime === undefined) {
+          data.checkInTime = new Date();
+        }
       }
       const item = await Item.create(data);
       res.status(201).json(item);
@@ -119,6 +131,10 @@ router.put(
       .optional()
       .isObject()
       .withMessage("metadata must be object"),
+    body("checkInTime")
+      .optional()
+      .isISO8601()
+      .withMessage("checkInTime must be a valid date in ISO format"),
     body("location")
       .optional()
       .isMongoId()
@@ -130,7 +146,17 @@ router.put(
   ]),
   async (req, res, next) => {
     try {
-      const item = await Item.findByIdAndUpdate(req.params.id, req.body, {
+      // If we're updating the location but not explicitly setting checkInTime, set it automatically
+      const updateData = { ...req.body };
+      
+      if ((updateData.location || updateData.locationId) && !updateData.checkInTime) {
+        // Only set checkInTime if we're adding a location (not if removing it)
+        if (updateData.location || updateData.locationId) {
+          updateData.checkInTime = new Date();
+        }
+      }
+      
+      const item = await Item.findByIdAndUpdate(req.params.id, updateData, {
         new: true,
       }).populate("location");
       if (!item) {

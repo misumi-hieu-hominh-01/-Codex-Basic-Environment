@@ -26,12 +26,15 @@ export function CheckInItemModal({
 
   const handleSelect = async (loc: StorageLocation) => {
     try {
-      const updated = await updateItem(item._id, { location: loc._id });
+      const updated = await updateItem(item._id, {
+        location: loc._id,
+        checkInTime: new Date().toISOString(),
+      });
       updateItemInStore(updated);
       onClose();
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      alert(err.message ?? "Failed to check in item");
+      alert(err instanceof Error ? err.message : "Failed to check in item");
     }
   };
 
