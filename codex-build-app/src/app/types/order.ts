@@ -1,7 +1,7 @@
 export interface SalesOrder {
-  orderNumber: string;
-  date: string;
-  status: string;
-  customer: string;
-  total: string;
+  soSlipNumber: string;
+  salesOrderDateTime: string;
+  soSlipStatus: string;
+  customer: never;
+  amount: never;
 }

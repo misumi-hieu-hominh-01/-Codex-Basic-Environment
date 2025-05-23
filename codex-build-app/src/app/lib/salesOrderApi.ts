@@ -1,8 +1,7 @@
 const SALES_ORDER_API_URL =
-  process.env.NEXT_PUBLIC_SALES_ORDER_API_URL || "http://localhost:5002";
+  process.env.NEXT_PUBLIC_SALES_ORDER_API_URL || "http://localhost:5001";
 
 export async function salesOrderApiRequest(
-  endpoint: string,
   params: Record<string, string> = {},
   options: RequestInit = {}
 ): Promise<any> {
@@ -15,7 +14,7 @@ export async function salesOrderApiRequest(
   }
 
   const query = new URLSearchParams(params).toString();
-  const url = `${SALES_ORDER_API_URL}/${endpoint}${query ? `?${query}` : ""}`;
+  const url = `${SALES_ORDER_API_URL}${query ? `?${query}` : ""}`;
 
   const headers = {
     Authorization: `Bearer ${sessionId}`,

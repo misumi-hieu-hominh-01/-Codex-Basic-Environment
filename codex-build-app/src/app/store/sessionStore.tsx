@@ -1,50 +1,102 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
 
 export interface Session {
   sessionId: string;
+  expiresAt?: number; // Timestamp when the session expires
 }
 
 export interface SessionStore {
   session: Session | null;
   setSession: (session: Session | null) => void;
+  logout: () => void;
 }
 
 const SessionContext = createContext<SessionStore | undefined>(undefined);
 
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [session, setSessionState] = useState<Session | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
+  // Load session from localStorage on client-side only
   useEffect(() => {
-    const stored = typeof window !== 'undefined' ? localStorage.getItem('session') : null;
-    if (stored) {
-      try {
-        setSessionState(JSON.parse(stored));
-      } catch {
-        // ignore parse errors
+    if (typeof window === "undefined") return;
+
+    try {
+      const stored = localStorage.getItem("session");
+      if (stored) {
+        const parsedSession = JSON.parse(stored) as Session;
+
+        // Check if the session has expired
+        if (parsedSession.expiresAt && Date.now() > parsedSession.expiresAt) {
+          // Session expired, remove it
+          localStorage.removeItem("session");
+        } else {
+          setSessionState(parsedSession);
+        }
       }
+    } catch (error) {
+      console.error("Error loading session from localStorage:", error);
+    } finally {
+      setIsInitialized(true);
     }
   }, []);
 
   const setSession = (sess: Session | null) => {
     setSessionState(sess);
-    if (typeof window === 'undefined') return;
-    if (sess) {
-      localStorage.setItem('session', JSON.stringify(sess));
-    } else {
-      localStorage.removeItem('session');
+
+    if (typeof window === "undefined") return;
+
+    try {
+      if (sess) {
+        const sessionStr = JSON.stringify(sess);
+        localStorage.setItem("session", sessionStr);
+      } else {
+        localStorage.removeItem("session");
+      }
+    } catch (error) {
+      console.error("Error saving session to localStorage:", error);
     }
   };
 
-  const value: SessionStore = { session, setSession };
-  return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
+  const logout = () => {
+    setSessionState(null);
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("session");
+    }
+  };
+
+  const value: SessionStore = {
+    session,
+    setSession,
+    logout,
+  };
+
+  // Wait for client-side initialization before rendering children
+  // This prevents hydration mismatch warnings
+  return (
+    <SessionContext.Provider value={value}>
+      {/* Use invisible loading state instead of conditional rendering to avoid hydration errors */}
+      {!isInitialized && typeof window !== "undefined" ? (
+        <div style={{ display: "none" }}>Loading session...</div>
+      ) : (
+        children
+      )}
+    </SessionContext.Provider>
+  );
 }
 
 export function useSession(): SessionStore {
   const context = useContext(SessionContext);
   if (!context) {
-    throw new Error('useSession must be used within SessionProvider');
+    throw new Error("useSession must be used within SessionProvider");
   }
   return context;
 }
