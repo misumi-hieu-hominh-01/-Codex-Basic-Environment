@@ -1,7 +1,20 @@
 export interface SalesOrder {
-  orderNumber: string;
-  date: string;
-  status: string;
-  customer: string;
-  total: string;
+  soSlipNumber: string;
+  salesOrderDateTime: string;
+  soSlipStatus: string;
+  customer?: {
+    customerName?: string;
+    customerId?: string;
+  };
+  amount?: {
+    totalSalesAmountIncludingTax?: string | number;
+    subTotal?: string | number;
+    totalTaxAmount?: string | number;
+  };
+  items?: Array<{
+    itemId: string;
+    itemName?: string;
+    quantity?: number;
+    price?: string | number;
+  }>;
 }

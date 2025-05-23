@@ -1,86 +1,172 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Input } from '../../components/ui/Input';
-import { Button } from '../../components/ui/Button';
-import { useSession } from '../../store/sessionStore';
-import type { SalesOrder } from '../../types';
-import styles from './page.module.css';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Input } from "../../components/ui/Input";
+import { Button } from "../../components/ui/Button";
+import { useSession } from "../../store/sessionStore";
+import { salesOrderApiRequest } from "../../lib/salesOrderApi";
+import type { SalesOrder } from "../../types";
+import styles from "./page.module.css";
 
-const mockOrders: SalesOrder[] = [
-  {
-    orderNumber: 'AB23G23G8C',
-    date: '2025-05-19',
-    status: '出荷準備中',
-    customer: 'エコエナジー研究所',
-    total: '1,089円',
-  },
-  {
-    orderNumber: 'CD34H56I7J',
-    date: '2025-05-20',
-    status: '出荷済み',
-    customer: 'スマートホーム株式会社',
-    total: '2,500円',
-  },
-  {
-    orderNumber: 'EF45I78K9L',
-    date: '2025-05-18',
-    status: 'キャンセル',
-    customer: 'グリーンエネルギー社',
-    total: '980円',
-  },
-  {
-    orderNumber: 'GH56J89L0M',
-    date: '2025-05-17',
-    status: '出荷準備中',
-    customer: '太陽光ソリューション',
-    total: '4,200円',
-  },
-  {
-    orderNumber: 'IJ67K90M1N',
-    date: '2025-05-19',
-    status: '出荷済み',
-    customer: 'クリーンパワーサービス',
-    total: '3,300円',
-  },
+// Helper function to get date in YYYY-MM-DD format
+interface FormatDateToYYYYMMDD {
+  (date: Date): string;
+}
+
+const statuses = [
+  "全て",
+  "入金待ち",
+  "出荷準備中",
+  "出荷済み",
+  "着荷済み",
+  "キャンセル済み",
 ];
 
-const statuses = ['全て', '出荷準備中', '出荷済み', 'キャンセル'];
-
 export default function SalesOrdersPage() {
+  const formatDateToYYYYMMDD: FormatDateToYYYYMMDD = (date) => {
+    return date.toISOString().split("T")[0]; // Returns YYYY-MM-DD
+  };
+
+  // Calculate default dates (3 months ago to today)
+  const getDefaultDates = () => {
+    const today = new Date();
+    const threeMonthsAgo = new Date();
+    threeMonthsAgo.setMonth(today.getMonth() - 3);
+
+    return {
+      from: formatDateToYYYYMMDD(threeMonthsAgo),
+      to: formatDateToYYYYMMDD(today),
+    };
+  };
+
+  const defaultDates = getDefaultDates();
+
+  // Helper function to convert UI status to API status codes
+  const mapStatusToCode = (status: string): string => {
+    switch (status) {
+      case "入金待ち":
+        return "11,12";
+      case "出荷準備中":
+        return "02,03";
+      case "出荷済み":
+        return "01,04,05,07,08";
+      case "着荷済み":
+        return "06,09";
+      case "キャンセル済み":
+        return "99,16,17";
+      default:
+        return "01,02,03,04,05,06,07,08,09,11,12,16,17,99";
+    }
+  };
+
   const router = useRouter();
   const { session } = useSession();
-  const [orders] = useState<SalesOrder[]>(mockOrders);
-  const [filtered, setFiltered] = useState<SalesOrder[]>(mockOrders);
-  const [status, setStatus] = useState('全て');
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
+  const [orders, setOrders] = useState<SalesOrder[]>([]);
+  const [status, setStatus] = useState("全て");
+  const [dateFrom, setDateFrom] = useState(defaultDates.from);
+  const [dateTo, setDateTo] = useState(defaultDates.to);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useState({
+    salesOrderDateFrom: defaultDates.from,
+    salesOrderDateTo: defaultDates.to,
+    soSlipStatus: "01,02,03,04,05,06,07,08,09,11,12,16,17,99", // All statuses by default
+    sortby: "-registerDateTimeHeader,soLineNumber",
+    limit: "500", // Changed to string to match API expectations
+    offset: "1", // Changed to string to match API expectations
+  });
 
   useEffect(() => {
     if (!session?.sessionId) {
-      router.replace('/login');
+      router.replace("/login");
+    } else {
+      handleSearch();
     }
-  }, [session, router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session]);
 
-  const handleSearch = () => {
-    let result = orders;
-    if (status !== '全て') {
-      result = result.filter((o) => o.status === status);
+  const handleSearch = async () => {
+    if (!session?.sessionId) return;
+    setLoading(true);
+    setError(null);
+    try {
+      // Create updated params with current filter values
+      const updatedParams = {
+        ...searchParams,
+        salesOrderDateFrom: dateFrom || defaultDates.from,
+        salesOrderDateTo: dateTo || defaultDates.to,
+        // Update status codes based on selection if needed
+        soSlipStatus:
+          status !== "全て"
+            ? mapStatusToCode(status)
+            : "01,02,03,04,05,06,07,08,09,11,12,16,17,99",
+      };
+
+      // Update the state
+      setSearchParams(updatedParams);
+
+      // Send the updated params to the API (use the updatedParams object directly)
+      const data = await salesOrderApiRequest(updatedParams);
+      setOrders(data.soSlipList as SalesOrder[]);
+    } catch (err) {
+      console.error(err);
+      setError(err instanceof Error ? err.message : "Fetch failed");
+    } finally {
+      setLoading(false);
     }
-    if (dateFrom) {
-      result = result.filter((o) => o.date >= dateFrom);
-    }
-    if (dateTo) {
-      result = result.filter((o) => o.date <= dateTo);
-    }
-    setFiltered(result);
   };
 
-  useEffect(() => {
-    handleSearch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status]);
+  // Helper functions for formatting
+  const formatDateTime = (dateString: string | undefined): string => {
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    return date
+      .toLocaleDateString("ja-JP", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      })
+      .replace(/\//g, "/");
+  };
+
+  const formatPrice = (price: string | number | undefined): string => {
+    if (price === undefined || price === null) return "-";
+    try {
+      // Handle both string and number types
+      const numValue = typeof price === "number" ? price : parseFloat(price);
+      if (isNaN(numValue)) return "-";
+      return numValue.toLocaleString("ja-JP");
+    } catch (error) {
+      console.error("Error formatting price:", error);
+      return "-";
+    }
+  };
+
+  const getStatusName = (statusCode: string | undefined): string => {
+    if (!statusCode) return "Unknown";
+
+    const statusMap: Record<string, string> = {
+      "01": "処理済",
+      "02": "準備中",
+      "03": "準備完了",
+      "04": "出荷中",
+      "05": "出荷済",
+      "06": "着荷済",
+      "07": "部分出荷中",
+      "08": "部分出荷済",
+      "09": "部分着荷済",
+      "11": "入金待ち",
+      "12": "一部入金済",
+      "16": "キャンセル依頼",
+      "17": "部分キャンセル",
+      "99": "キャンセル済",
+    };
+
+    // Ensure statusCode is a string that exists in the map
+    const code = String(statusCode).padStart(2, "0");
+    return statusMap[code] || `Status ${statusCode}`;
+  };
 
   if (!session?.sessionId) {
     return null;
@@ -88,55 +174,108 @@ export default function SalesOrdersPage() {
 
   return (
     <div className={styles.page}>
-      <h1>Sales Orders</h1>
+      <h1 className={styles.pageTitle}>Sales Orders</h1>
       <div className={styles.filters}>
         <div className={styles.dates}>
-          <Input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
-          <Input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
+          <div className={styles.dateInputWrapper}>
+            <label className={styles.dateLabel}>From:</label>
+            <Input
+              type="date"
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+              className={styles.dateInput}
+            />
+          </div>
+          <div className={styles.dateInputWrapper}>
+            <label className={styles.dateLabel}>To:</label>
+            <Input
+              type="date"
+              value={dateTo}
+              onChange={(e) => setDateTo(e.target.value)}
+              className={styles.dateInput}
+            />
+          </div>
         </div>
         <div className={styles.statusTabs}>
           {statuses.map((s) => (
             <button
               key={s}
-              className={`${styles.tab} ${status === s ? styles.activeTab : ''}`}
+              className={`${styles.tab} ${
+                status === s ? styles.activeTab : ""
+              }`}
               onClick={() => setStatus(s)}
             >
               {s}
             </button>
           ))}
         </div>
-        <Button type="button" onClick={handleSearch}>
-          Search
+        <Button type="button" onClick={handleSearch} disabled={loading}>
+          {loading ? "Loading..." : "Search"}
         </Button>
       </div>
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>ORDER #</th>
-            <th>DATE</th>
-            <th>STATUS</th>
-            <th>CUSTOMER</th>
-            <th>TOTAL</th>
-            <th>ACTIONS</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filtered.map((order) => (
-            <tr key={order.orderNumber}>
-              <td>{order.orderNumber}</td>
-              <td>{order.date}</td>
-              <td>{order.status}</td>
-              <td>{order.customer}</td>
-              <td>{order.total}</td>
-              <td>
-                <Button type="button" variant="secondary">
-                  View
-                </Button>
-              </td>
+      {error && <p className={styles.error}>{error}</p>}
+      <div style={{ position: "relative" }}>
+        {loading && (
+          <div className={styles.loadingOverlay}>
+            <div className={styles.spinner}></div>
+          </div>
+        )}
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>ORDER #</th>
+              <th>DATE</th>
+              <th>STATUS</th>
+              <th>CUSTOMER</th>
+              <th>TOTAL</th>
+              <th>ACTIONS</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {orders.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={6}
+                  style={{ textAlign: "center", padding: "2rem" }}
+                >
+                  {loading
+                    ? "Loading orders..."
+                    : "No orders found matching your criteria"}
+                </td>
+              </tr>
+            ) : (
+              orders.map((order) => (
+                <tr key={order.soSlipNumber}>
+                  <td>{order.soSlipNumber}</td>
+                  <td>{formatDateTime(order.salesOrderDateTime)}</td>
+                  <td>
+                    <span
+                      className={`${styles.statusBadge} ${
+                        styles[`status${order.soSlipStatus}`] || ""
+                      }`}
+                    >
+                      {getStatusName(order.soSlipStatus)}
+                    </span>
+                  </td>
+                  <td>{order.customer?.customerName}</td>
+                  <td className={styles.price}>
+                    ￥{formatPrice(order.amount?.totalSalesAmountIncludingTax)}
+                  </td>
+                  <td className={styles.actionCell}>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      className={styles.viewButton}
+                    >
+                      View
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

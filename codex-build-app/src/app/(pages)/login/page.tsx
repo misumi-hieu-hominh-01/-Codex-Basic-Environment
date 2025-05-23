@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import { FormEvent, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Input } from '../../components/ui/Input';
-import { Button } from '../../components/ui/Button';
-import { login } from '../../lib/authService';
-import { useSession } from '../../store/sessionStore';
-import styles from './page.module.css';
+import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Input } from "../../components/ui/Input";
+import { Button } from "../../components/ui/Button";
+import { login } from "../../lib/authService";
+import { useSession } from "../../store/sessionStore";
+import styles from "./page.module.css";
 
 export default function LoginPage() {
   const router = useRouter();
   const { setSession } = useSession();
-  const [loginId, setLoginId] = useState('');
-  const [password, setPassword] = useState('');
+  const [loginId, setLoginId] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,11 +22,18 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const { sessionId } = await login(loginId, password);
-      setSession({ sessionId });
-      router.push('/sales-orders');
+
+      // Set the session with the sessionId and 24 hour expiration
+      const expiresAt = Date.now() + 24 * 60 * 60 * 1000; // 24 hours from now
+      setSession({ sessionId, expiresAt });
+
+      // Small delay to ensure localStorage is updated before navigation
+      setTimeout(() => {
+        router.push("/sales-orders");
+      }, 100);
     } catch (err) {
       console.error(err);
-      setError(err instanceof Error ? err.message : 'Login failed');
+      setError(err instanceof Error ? err.message : "Login failed");
     } finally {
       setLoading(false);
     }
@@ -49,7 +56,7 @@ export default function LoginPage() {
         />
         {error && <p className={styles.error}>{error}</p>}
         <Button type="submit" disabled={loading}>
-          {loading ? 'Logging in...' : 'Login'}
+          {loading ? "Logging in..." : "Login"}
         </Button>
       </form>
     </div>
