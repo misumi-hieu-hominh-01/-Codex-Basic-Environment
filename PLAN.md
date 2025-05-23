@@ -6,246 +6,302 @@ This document outlines the plan for building a mobile-first web application desi
 
 ## 2. Technology Stack
 
-- **Frontend**: Next.js (React + TypeScript) - Chosen for its robust framework features, server-side rendering capabilities, and strong TypeScript support.
-- **Styling**: CSS Modules as already present in `page.module.css` for utility-first styling, ensuring a responsive and mobile-first design.
-- **State Management**: React Context API for simpler global state or Redux ToolKits for more complex state.
-- **Barcode Scanning**: A library like `barcode-detect` and `react-webcam` for accessing the device camera and decoding barcodes.
+- **Frontend**: Next.js (React + TypeScript)
+- **Styling**: CSS Modules
+- **State Management**: React Context API / Zustand
+- **Barcode Scanning**: `barcode-detect` and `react-webcam`
 - **Data Persistence**:
-  - **Local**: LocalStorage or IndexedDB for offline support or temporary storage of scanned items before backend sync.
-  - **Backend**: A simple Node.js/Express backend with a database (MongoDB) for user authentication, data storage (items, locations, images), and API endpoints.
-- **File Storage**: Cloud storage solution (Cloudinary) for storing images of storage locations.
+  - **Local**: LocalStorage or IndexedDB
+  - **Backend**: Node.js/Express with MongoDB
+- **File Storage**: Cloudinary (or local storage for development)
 
-## 3. Project Structure (Extending Existing Next.js App)
+## 3. Project Structure
+
+### `codex-build-app/` (Frontend - Next.js)
 
 ```
 codex-build-app/
 ├── public/
-│   ├── ... (existing files)
+│   ├── file.svg
+│   ├── globe.svg
+│   ├── next.svg
+│   ├── vercel.svg
+│   └── window.svg
 ├── src/
 │   ├── app/
 │   │   ├── (pages)/
 │   │   │   ├── check-in/
+│   │   │   │   ├── page.module.css
 │   │   │   │   └── page.tsx      # Barcode scanning and item check-in
-│   │   │   ├── storage/
-│   │   │   │   ├── page.tsx      # View/manage storage locations
-│   │   │   │   └── new/
-│   │   │   │       └── page.tsx  # Add new storage location
-│   │   │   └── items/
-│   │   │       └── [barcode]/
-│   │   │           └── store/
-│   │   │               └── page.tsx # Page to select/create storage for a scanned item
-│   │   ├── api/                  # Next.js API Routes (if building a simple backend here)
+│   │   │   ├── history/
+│   │   │   │   ├── page.module.css
+│   │   │   │   └── page.tsx      # View item history
+│   │   │   └── storage/
+│   │   │       ├── page.module.css
+│   │   │       └── page.tsx      # View/manage storage locations
+│   │   ├── api/
 │   │   │   ├── items/
 │   │   │   │   └── route.ts      # API for item management
 │   │   │   └── locations/
 │   │   │       └── route.ts      # API for location management
 │   │   ├── components/
-│   │   │   ├── ui/               # General UI components (Button, Input, Modal, etc.)
-│   │   │   │   ├── Button.tsx
-│   │   │   │   └── Input.tsx
 │   │   │   ├── check-in/
+│   │   │   │   ├── BarcodeConfirmModal.module.css
+│   │   │   │   ├── BarcodeConfirmModal.tsx
+│   │   │   │   ├── BarcodeScanner.module.css
 │   │   │   │   ├── BarcodeScanner.tsx
+│   │   │   │   ├── ManualBarcodeEntry.module.css
+│   │   │   │   ├── ManualBarcodeEntry.tsx
 │   │   │   │   └── ScannedItemsList.tsx
+│   │   │   ├── history/
+│   │   │   │   ├── CheckInItemModal.module.css
+│   │   │   │   ├── CheckInItemModal.tsx
+│   │   │   │   ├── DeleteConfirmModal.module.css
+│   │   │   │   ├── DeleteConfirmModal.tsx
+│   │   │   │   ├── HistoryItemCard.module.css
+│   │   │   │   └── HistoryItemCard.tsx
+│   │   │   ├── layout/
+│   │   │   │   ├── MobileMenu.module.css
+│   │   │   │   ├── MobileMenu.tsx
+│   │   │   │   ├── Navbar.module.css
+│   │   │   │   └── Navbar.tsx
 │   │   │   ├── storage/
-│   │   │   │   ├── LocationForm.tsx
+│   │   │   │   ├── DeleteLocationModal.module.css
+│   │   │   │   ├── DeleteLocationModal.tsx
+│   │   │   │   ├── LocationCard.module.css
 │   │   │   │   ├── LocationCard.tsx
+│   │   │   │   ├── LocationForm.module.css
+│   │   │   │   ├── LocationForm.tsx
+│   │   │   │   ├── LocationsList.module.css
 │   │   │   │   └── LocationsList.tsx
-│   │   │   └── layout/
-│   │   │       ├── Navbar.tsx
-│   │   │       └── MobileMenu.tsx
-│   │   ├── lib/                  # Utility functions, helper functions
-│   │   │   └── barcodeUtils.ts
-│   │   │   └── storageService.ts # Functions for interacting with backend/local storage
-│   │   ├── hooks/                # Custom React Hooks
+│   │   │   └── ui/
+│   │   │       ├── Button.module.css
+│   │   │       ├── Button.tsx
+│   │   │       ├── Input.module.css
+│   │   │       ├── Input.tsx
+│   │   │       ├── Modal.module.css
+│   │   │       ├── Modal.tsx
+│   │   │       ├── ToggleSwitch.module.css
+│   │   │       └── ToggleSwitch.tsx
+│   │   ├── hooks/
 │   │   │   └── useCamera.ts
-│   │   ├── store/                # State management (e.g., Zustand or Context)
-│   │   │   ├── itemStore.ts
-│   │   │   └── locationStore.ts
-│   │   ├── types/                # TypeScript type definitions
-│   │   │   ├── index.ts          # Main types file
+│   │   ├── lib/
+│   │   │   ├── barcodeUtils.ts
+│   │   │   └── storageService.ts
+│   │   ├── store/
+│   │   │   ├── itemStore.tsx
+│   │   │   ├── locationStore.tsx
+│   │   │   └── StoreProvider.tsx
+│   │   ├── types/
+│   │   │   ├── index.ts
 │   │   │   ├── item.ts
 │   │   │   └── location.ts
+│   │   ├── favicon.ico
 │   │   ├── globals.css
-│   │   ├── layout.tsx            # Main app layout
+│   │   ├── layout.tsx
 │   │   ├── page.module.css
-│   │   └── page.tsx              # Homepage (can be a dashboard or redirect)
-├── eslint.config.mjs
-├── next-env.d.ts
-├── next.config.ts
+│   │   └── page.tsx
+│   ├── eslint.config.mjs
+│   ├── next-env.d.ts
+│   ├── next.config.ts
+│   ├── package.json
+│   └── tsconfig.json
+```
+
+### `backend/` (Backend - Node.js/Express)
+
+```
+backend/
+├── public/
+│   └── uploads/
+│       └── locations/  # Local storage for location images (dev)
+├── src/
+│   ├── index.js        # Main server entry point
+│   ├── models/
+│   │   ├── item.js     # Mongoose model for items
+│   │   └── location.js # Mongoose model for locations
+│   ├── routes/
+│   │   ├── items.js    # API routes for items
+│   │   └── locations.js # API routes for locations
+│   └── utils/
+│       └── imageStorage.js # Utility for saving/deleting images
+├── .env.example
 ├── package.json
-├── tsconfig.json
-└── PLAN.md
+└── README.md
 ```
 
 ## 4. Key Features
 
 ### 4.1. Barcode Check-in
 
-- **Scan Item Barcodes**: Utilize device camera to scan barcodes.
-  - Library: `barcode-detect` and `react-webcam`.
-  - UI: Display camera feed, provide clear instructions.
-- **Save Scan History**:
-  - Store barcode value, timestamp of scan.
-  - Allow adding metadata (e.g., item name, quantity if applicable - though not explicitly requested, good for future).
-  - Initially, this list can be "unprocessed" items.
+- Scan item barcodes via camera (`BarcodeScanner.tsx`).
+- Manual barcode entry (`ManualBarcodeEntry.tsx`).
+- Confirmation of scanned/entered barcode (`BarcodeConfirmModal.tsx`).
+- Display list of scanned items (`ScannedItemsList.tsx`).
 
 ### 4.2. Storage Management
 
-- **Add New Storage Locations**:
-  - Upload an image of the location.
-  - Enter a textual description (e.g., "Shelf A, Row 3, Bin 2").
-  - Assign a unique ID/name to the location.
-- **View/Manage Storage Locations**:
-  - Display locations in a list or grid format.
-  - Show image and description for each location.
-  - (Future: Edit/delete locations).
+- Add new / edit storage locations with image and description (on `LocationForm.tsx`).
+- View/manage storage locations (`LocationsList.tsx`, `LocationCard.tsx` on `/storage`).
+- Delete storage locations (`DeleteLocationModal.tsx`).
 
-## 5. Workflow Overview
+### 4.3. Item Management & History
 
-1.  **Check-in Item**:
+- View details of an item (`ItemDetails.tsx`).
+- View history of item check-ins and storage (`HistoryItemCard.tsx` on `/history`).
+- Assign scanned items to storage locations (`CheckInItemModal.tsx`).
+- Confirm deletion of history items (`DeleteConfirmModal.tsx`).
 
-    - User navigates to the "Check-in" page.
-    - Has two input options:
-      1. **Scan Barcode via Camera**:
-      - Activates device camera for barcode scanning.
-      - On successful scan, item (barcode value + timestamp) is added to a **"Recently Scanned"** or **"Pending Storage"** list.
-      2. **Manual Barcode Entry**:
-      - User taps on **"Enter Manually"** button.
-      - Inputs barcode value via text field.
-      - (Optional) Can add metadata (e.g. item name).
-      - Upon submit, item is added to the same list as scanned ones.
-    - User can continue checking in multiple items using either method.
-    - All scanned/entered items appear in a scrollable list with: Barcode, Time, Input method (e.g. `scanned`, `manual`)
+## 5. Pages and Components (Frontend)
 
-2.  **Store Item**:
-    - **Option A (From Scanned List)**:
-      - User views the "Recently Scanned" list.
-      - Selects an item to store.
-      - The app might prompt to confirm the item (e.g., by showing its barcode).
-    - **Option B (Direct Store with Re-scan)**:
-      - User intends to store an item they have physically.
-      - Scans the item's barcode again to identify it.
-    - **Assigning Location**:
-      - After identifying the item, the user is presented with a list of existing storage locations.
-      - They can select an existing location.
-      - OR, they can choose to "Create New Location".
-        - If creating new: User is taken to the "Add New Storage Location" page/modal. They upload an image, add a description. The new location is saved.
-        - The item is then associated with this newly created (or selected) location.
-    - **Data Update**: The item is marked as "stored" and linked to the chosen storage location ID. The "Recently Scanned" list is updated (item removed or status changed).
+### 5.1. Pages (`src/app/(pages)/`)
 
-## 6. Pages and Components
+- **`/` (`page.tsx`)**: Home/Dashboard.
+- **`/check-in` (`check-in/page.tsx`)**: Barcode scanning, manual entry, list of scanned items.
+  - Components: `BarcodeScanner`, `ManualBarcodeEntry`, `BarcodeConfirmModal`, `ScannedItemsList`.
+- **`/storage` (`storage/page.tsx`)**: Display storage locations.
+  - Components: `LocationsList`, `LocationCard`, `DeleteLocationModal`.
+- **`/storage/new` (`storage/new/page.tsx`)**: Form to add a new storage location.
+  - Components: `LocationForm`.- **`/items/[barcode]/store` (`items/[barcode]/store/page.tsx`)**: Assign item to a storage location.
+  - Components: `LocationsList`, `LocationForm`, `Modal`, `Button`.
+- **`/history` (`history/page.tsx`)**: View history of item movements.
+  - Components: `HistoryItemCard`, `CheckInItemModal`, `DeleteConfirmModal`, `ToggleSwitch`.
 
-### Pages (`src/app/(pages)/`)
+### 5.2. Core Components (`src/app/components/`)
 
-- **`/` (Home/Dashboard - `src/app/page.tsx`)**:
-  - Responsibilities: Overview, quick links to "Check-in" and "Storage Management".
-- **`/check-in` (`src/app/(pages)/check-in/page.tsx`)**:
-  - Responsibilities: Host the barcode scanning interface, allow manual barcode input via form, display a list of recently scanned/pending items.
-  - Components: `BarcodeScanner`, `ScannedItemsList`.
-- **`/storage` (`src/app/(pages)/storage/page.tsx`)**:
-  - Responsibilities: Display all storage locations, allow navigation to add a new location.
-  - Components: `LocationsList`, `Button` (to add new).
-- **`/storage/new` (`src/app/(pages)/storage/new/page.tsx`)**:
-  - Responsibilities: Form to add a new storage location (image upload, description).
-  - Components: `LocationForm`.
-- **`/items/[barcode]/store` (`src/app/(pages)/items/[barcode]/store/page.tsx`)**:
-  - Responsibilities: Page to assign a scanned item (identified by `barcode`) to a storage location. Shows item details, list of locations, and option to create a new location.
-  - Components: `ItemDetails`, `LocationsList`, `Button` (to create new location if needed).
+- **UI Components (`ui/`)**:
+  - `Button.tsx`
+  - `Input.tsx`
+  - `Modal.tsx`
+  - `ToggleSwitch.tsx`
+- **Layout Components (`layout/`)**:
+  - `Navbar.tsx`
+  - `MobileMenu.tsx`
+- **Check-in Components (`check-in/`)**:
+  - `BarcodeScanner.tsx`
+  - `ManualBarcodeEntry.tsx`
+  - `ScannedItemsList.tsx`
+  - `BarcodeConfirmModal.tsx`
+- **Storage Components (`storage/`)**:
+  - `LocationForm.tsx`
+  - `LocationCard.tsx`
+  - `LocationsList.tsx`
+  - `DeleteLocationModal.tsx`
+- **History Components (`history/`)**:
+  - `HistoryItemCard.tsx`
+  - `CheckInItemModal.tsx`
+  - `DeleteConfirmModal.tsx`
 
-### Core Components (`src/app/components/`)
+### 5.3. Hooks (`src/app/hooks/`)
 
-- **`ui/Button.tsx`**: Reusable button component.
-- **`ui/Input.tsx`**: Reusable input field.
-- **`ui/Modal.tsx`**: Reusable modal component.
-- **`layout/Navbar.tsx`**: Navigation bar for the app.
-- **`layout/MobileMenu.tsx`**: Hamburger menu for mobile navigation.
-- **`check-in/BarcodeScanner.tsx`**:
-  - Responsibilities: Integrate with barcode scanning library, display camera feed, handle scan events.
-- **`check-in/ScannedItemsList.tsx`**:
-  - Responsibilities: Display items that have been scanned but not yet stored. Allow selection for storage.
-- **`storage/LocationForm.tsx`**:
-  - Responsibilities: Form for creating/editing a storage location (image upload, description input).
-- **`storage/LocationCard.tsx`**:
-  - Responsibilities: Display a single storage location's information (image, description).
-- **`storage/LocationsList.tsx`**:
-  - Responsibilities: Display a list/grid of `LocationCard` components. Allow selection of a location.
+- `useCamera.ts`: Custom hook for camera access.
 
-## 7. State/Data Flow Plan
+### 5.4. Lib (`src/app/lib/`)
 
-- **Global State (React Context / Redux)**:
-  - `scannedItems`: Array of items that have been scanned but not yet placed in storage. Each item: `{ barcode: string, scannedAt: Date, source: "scan" | "manual", metadata?: object }`.
-  - `storageLocations`: Array of storage locations. Each location: `{ id: string, name: string, description: string, imageUrl?: string }`.
-  - `userSession` (if authentication is implemented).
-- **Local Component State**:
-  - Form inputs, loading states, error messages within specific components.
+- `barcodeUtils.ts`: Utilities for barcode processing.
+- `storageService.ts`: Service for interacting with backend or local storage.
+
+### 5.5. Store (`src/app/store/`)
+
+- `itemStore.tsx`: State management for items.
+- `locationStore.tsx`: State management for locations.
+- `StoreProvider.tsx`: Provider for the global state.
+
+### 5.6. Types (`src/app/types/`)
+
+- `item.ts`: TypeScript type definitions for items.
+- `location.ts`: TypeScript type definitions for locations.
+- `index.ts`: Barrel file for types.
+
+## 6. Backend API Endpoints (`backend/src/routes/`)
+
+### 6.1. Items (`/api/items`)
+
+- **`GET /`**: List all items.
+  - Query params: `status=pending` or `unassigned=true` to filter for items not yet in a location.
+- **`GET /:id`**: Get a single item by ID.
+- **`POST /`**: Create a new item.
+  - Body: `{ barcode: string, name?: string, quantity?: number, metadata?: object, locationId?: string, checkInTime?: Date }`
+- **`PUT /:id`**: Update an item.
+  - Body: `{ barcode?: string, name?: string, quantity?: number, metadata?: object, locationId?: string, checkInTime?: Date }`
+  - If `locationId` is provided and `checkInTime` is not, `checkInTime` is set to current time.
+- **`DELETE /:id`**: Delete an item.
+
+### 6.2. Locations (`/api/locations`)
+
+- **`GET /`**: List all locations.
+- **`GET /:id`**: Get a single location by ID.
+- **`POST /`**: Create a new location.
+  - Expects `multipart/form-data`.
+  - Fields: `name: string`, `description?: string`, `image?: File`
+  - Saves image to `public/uploads/locations/` (dev) or cloud.
+- **`PUT /:id`**: Update a location.
+  - Expects `multipart/form-data`.
+  - Fields: `name?: string`, `description?: string`, `image?: File`
+  - If new image is uploaded, old one is deleted.
+- **`DELETE /:id`**: Delete a location (and its associated image).
+
+## 7. Data Models (Backend - Mongoose)
+
+### 7.1. `Item` (`backend/src/models/item.js`)
+
+```javascript
+{
+  name: { type: String, default: 'Item [barcode]' },
+  quantity: { type: Number, default: 1 },
+  barcode: { type: String, required: true },
+  scannedAt: { type: Date, default: Date.now },
+  checkInTime: { type: Date, default: null }, // Time item was placed into a location
+  metadata: { type: mongoose.Schema.Types.Mixed },
+  location: { type: mongoose.Schema.Types.ObjectId, ref: 'Location', default: null }
+}
+```
+
+### 7.2. `Location` (`backend/src/models/location.js`)
+
+```javascript
+{
+  name: { type: String, required: true },
+  description: String,
+  imageUrl: String // URL of the uploaded image
+}
+```
+
+## 8. State/Data Flow Plan (Frontend)
+
+- **Global State (Zustand/Context - `src/app/store/`)**:
+  - `scannedItems`: Array of items scanned but not yet placed.
+  - `storageLocations`: Array of storage locations.
+  - `itemHistory`: Array of items that have been checked in and stored.
+- **Local Component State**: Form inputs, loading/error states.
 - **Data Flow**:
-  1.  **Scanning**: `BarcodeScanner` or `ManualEntryForm` calls `addScannedItem()` -> updates `scannedItems` in global store.
-  2.  **Adding Location**: `LocationForm` submits data, calls a service function (e.g., in `storageService.ts`) to save the location (API call or local storage), then updates `storageLocations` in global store.
-  3.  **Storing Item**:
-      - User selects an item from `ScannedItemsList` or scans an item.
-      - User selects a location from `LocationsList` or creates a new one via `LocationForm`.
-      - A service function updates the item's status (associates it with a location ID) and potentially moves it from `scannedItems` to a "stored items" list (if maintained separately) or updates its properties.
+  1.  **Scanning/Manual Entry**: `BarcodeScanner.tsx` / `ManualBarcodeEntry.tsx` -> `itemStore` (updates `scannedItems`).
+  2.  **Adding Location**: `LocationForm.tsx` -> `storageService.ts` (API call) -> `locationStore` (updates `storageLocations`).
+  3.  **Storing Item**: User selects item from `ScannedItemsList.tsx` & location from `LocationsList.tsx` (on `CheckInItemModal.tsx`) -> `storageService.ts` (API call) -> `itemStore` (updates item status, potentially moves from `scannedItems` to `itemHistory`).
 - **Backend Interaction**:
-  - API calls will be made from service functions (e.g., `src/lib/storageService.ts`) to fetch/send data to the backend.
-  - Optimistic updates can be used for a smoother UX (update UI immediately, then sync with backend).
+  - API calls via `fetch` or a library (e.g., Axios) in `storageService.ts`.
+  - Optimistic UI updates where appropriate.
 
-## 8. Barcode Scanning Library
+## 9. Barcode Scanning
 
-- **Recommendation**: `barcode-detect` and `react-webcam`.
-  - `react-webcam`: Provides access to webcam video feed within React components.Flexible and works well with custom frame processing.
-  - `barcode-detect`: a modern native web API that allows browsers to detect barcodes directly from images or camera feeds, without needing external libraries.
-- **Implementation**:
-  - The `BarcodeScanner.tsx` component will initialize the chosen library.
-  - Request camera permissions.
-  - Display the video stream.
-  - On successful scan, a callback function will receive the barcode data.
-  - This data will be used to update the application state.
-  - Provide user feedback (e.g., vibration, sound, visual confirmation).
+- Library: `barcode-detect` and `react-webcam`.
+- Implementation: `BarcodeScanner.tsx` initializes library, requests camera permissions, displays video feed, handles scan events.
 
-## 9. File Upload and Storage Logic
+## 10. File Upload and Storage (Locations)
 
-- **Frontend (Client-side)**:
-  - In `LocationForm.tsx`, use an `<input type="file" accept="image/*" />`.
-  - On file selection, get the `File` object.
-  - Optional: Preview the image locally before upload.
-- **Backend/Storage Service**:
-  - **Option 1 (Using Next.js API Route as a proxy)**:
-    1.  Client sends the image file (e.g., as `FormData`) to a Next.js API route (e.g., `/api/upload-image`).
-    2.  The API route receives the file and then uploads it to the chosen cloud storage service (AWS S3, Firebase Storage, etc.) using their respective SDKs.
-    3.  The cloud service returns a URL for the uploaded image.
-    4.  The API route returns this URL to the client.
-    5.  The client then saves this URL along with the location description.
-  - **Option 2 (Direct Client-to-Cloud Upload - if supported and secure)**:
-    1.  Client requests a signed URL from the backend (Next.js API route).
-    2.  Backend generates a signed URL (e.g., for S3) that allows temporary, direct upload from the client to the cloud storage.
-    3.  Client uploads the file directly to the cloud storage using the signed URL.
-    4.  The image URL is then used when saving the location data.
-- **Storage**:
-  - Store only the URL of the image in your database (PostgreSQL, MongoDB, Firebase Realtime Database/Firestore) associated with the storage location ID.
-  - The actual image files reside in the cloud storage.
+- **Frontend**: `LocationForm.tsx` uses `<input type="file">`.
+- **Backend**:
+  - `backend/src/routes/locations.js` uses `multer` for handling `multipart/form-data`.
+  - `backend/src/utils/imageStorage.js` handles saving files locally (e.g., to `public/uploads/locations/`) and deleting them.
+  - Stores image path/URL in `Location` model.
 
-## 10. Backend (Optional but Recommended)
+## 11. Future Considerations / Enhancements
 
-While some functionality can be mocked with local storage for a PoC, a real backend is crucial for:
+- User authentication.
+- Advanced search and filtering for items and locations.
+- Editing existing items and locations.
+- Offline support.
+- Reporting and analytics.
+- Cloud deployment for backend and image storage (e.g., Vercel for Next.js, Heroku/AWS for backend, Cloudinary/S3 for images).
 
-- Persistent storage of items and locations.
-- User accounts and authentication (if multiple users or data security is needed).
-- Centralized business logic.
-- Securely handling image uploads and managing storage URLs.
-- **Choices**:
-  - **Next.js API Routes**: Good for simpler backends integrated within the Next.js app.
-  - **Dedicated Backend (Node.js/Express)**: For more complex logic or if separating concerns.
-  - **CloudDB (Cloudinary, MongoDB)**: Speeds up development with: Built-in auth, Realtime DB,... For image upload Cloudinary can be used in combination with URL mapping in the database.
-
-## 11. Testing (Optional Notes)
-
-- **Unit Tests (Jest)**:
-  - Test individual components (e.g., `Button`, `LocationCard`).
-  - Test utility functions (e.g., barcode parsing, data transformation).
-  - Mock API calls and service functions.
-
-## 12. Deployment (Optional Notes)
-
-- **Vercel**: Native platform for Next.js apps, offers seamless deployment, CI/CD, serverless functions.
-
-This plan provides a comprehensive starting point. Details will be refined during development.
+This plan provides a comprehensive overview based on the current project structure.
