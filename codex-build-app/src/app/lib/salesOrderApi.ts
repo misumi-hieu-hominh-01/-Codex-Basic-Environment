@@ -4,7 +4,7 @@ const SALES_ORDER_API_URL =
 export async function salesOrderApiRequest(
   params: Record<string, string> = {},
   options: RequestInit = {}
-): Promise<any> {
+): Promise<{ soSlipList: unknown[] }> {
   const stored =
     typeof window !== "undefined" ? localStorage.getItem("session") : null;
   const sessionId = stored ? JSON.parse(stored).sessionId : null;

@@ -83,9 +83,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   // This prevents hydration mismatch warnings
   return (
     <SessionContext.Provider value={value}>
-      {/* Use invisible loading state instead of conditional rendering to avoid hydration errors */}
-      {!isInitialized && typeof window !== "undefined" ? (
-        <div style={{ display: "none" }}>Loading session...</div>
+      {/* Phần này render giống hệt nhau trên server & client */}
+      {!isInitialized ? (
+        <div style={{ visibility: "hidden" }}>Loading session...</div>
       ) : (
         children
       )}
