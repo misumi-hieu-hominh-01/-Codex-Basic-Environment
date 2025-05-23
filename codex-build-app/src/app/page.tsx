@@ -26,6 +26,9 @@ export default function Home() {
             Manage Storage
           </Button>
         </Link>
+        <Link href="/sales-orders">
+          <Button type="button" variant="secondary">Sales Orders</Button>
+        </Link>
       </div>
     </div>
   );
