@@ -41,10 +41,10 @@ export default function StoreItemPage() {
         setItem(res[0] ?? null);
         setLoading(false);
       })
-      .catch((err: any) => {
+      .catch((err) => {
         console.error(err);
         if (!active) return;
-        setError(err.message ?? "Failed to load item");
+        setError(err instanceof Error ? err.message : "Failed to load item");
         setLoading(false);
       });
 
@@ -60,9 +60,9 @@ export default function StoreItemPage() {
       const updated = await updateItemApi(item._id, { location: loc._id });
       updateItem(updated);
       router.push("/check-in");
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      setError(err.message ?? "Failed to update item");
+      setError(err instanceof Error ? err.message : "Failed to update item");
     }
   };
 

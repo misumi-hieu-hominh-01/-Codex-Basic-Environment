@@ -33,9 +33,9 @@ export function ItemForm({ item, onSubmitSuccess }: ItemFormProps) {
       });
       updateItemInStore(updated);
       onSubmitSuccess?.(updated);
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      setError(err.message ?? "Failed to update item");
+      setError(err instanceof Error ? err.message : "Failed to update item");
     } finally {
       setLoading(false);
     }

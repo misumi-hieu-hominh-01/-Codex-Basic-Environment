@@ -1,5 +1,8 @@
-import type { StorageLocation } from "../../types";
+"use client";
+
+import Image from "next/image";
 import styles from "./LocationCard.module.css";
+import type { StorageLocation } from "../../types";
 
 interface LocationCardProps {
   /** Location data to display */
@@ -46,7 +49,14 @@ export function LocationCard({
           )}
         </div>
       )}
-      <img className={styles.image} src={displayImageUrl} alt={name} />
+      <Image 
+        className={styles.image} 
+        src={displayImageUrl} 
+        alt={name}
+        width={150}
+        height={150}
+        style={{ objectFit: 'cover' }}
+      />
       <h3 className={styles.name}>{name}</h3>
       {description && <p className={styles.description}>{description}</p>}
     </div>

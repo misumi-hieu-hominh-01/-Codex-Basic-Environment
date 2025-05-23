@@ -25,11 +25,11 @@ export default function StoragePage() {
   const [deleting, setDeleting] = useState(false);
   const { removeLocation } = useLocationStore();
 
-  const handleSubmitSuccess = (_loc: StorageLocation) => {
+  const handleSubmitSuccess = () => {
     setModalOpen(false);
   };
 
-  const handleEditSuccess = (_loc: StorageLocation) => {
+  const handleEditSuccess = () => {
     setEditLocation(null);
   };
 

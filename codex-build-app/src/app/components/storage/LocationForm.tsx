@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import Image from "next/image";
 import { Input } from "../ui/Input";
 import { Button } from "../ui/Button";
 import { addLocation, updateLocation } from "../../lib/storageService";
@@ -61,9 +62,9 @@ export function LocationForm({ location, onSubmitSuccess }: LocationFormProps) {
       }
 
       onSubmitSuccess?.(saved);
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      setError(err.message ?? "Failed to save location");
+      setError(err instanceof Error ? err.message : "Failed to save location");
     } finally {
       setLoading(false);
     }
@@ -97,10 +98,13 @@ export function LocationForm({ location, onSubmitSuccess }: LocationFormProps) {
             setPreview(f ? URL.createObjectURL(f) : null);
           }}
         />
-        <img
+        <Image
           className={styles.preview}
           src={preview || DEFAULT_IMAGE_URL}
           alt="Preview"
+          width={200}
+          height={200}
+          style={{ objectFit: 'cover' }}
         />
       </label>
       {error && <p className={styles.error}>{error}</p>}

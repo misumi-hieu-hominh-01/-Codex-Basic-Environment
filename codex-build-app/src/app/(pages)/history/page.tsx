@@ -67,9 +67,9 @@ export default function HistoryPage() {
       await deleteItemApi(item._id);
       removeItem(item._id);
       setDeleteItem(null);
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      alert(err.message ?? "Failed to delete item");
+      alert(err instanceof Error ? err.message : "Failed to delete item");
     } finally {
       setDeleting(false);
     }

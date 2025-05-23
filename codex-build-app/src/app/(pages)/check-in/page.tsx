@@ -29,9 +29,9 @@ export default function CheckInPage() {
         source,
       });
       addItem(newItem);
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      setError(err.message ?? "Failed to add item");
+      setError(err instanceof Error ? err.message : "Failed to add item");
     }
   };
 
