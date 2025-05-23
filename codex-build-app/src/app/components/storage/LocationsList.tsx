@@ -86,7 +86,15 @@ export function LocationsList({
   });
 
   if (filtered.length === 0) {
-    return <div>No locations found.</div>;
+    return (
+      <div className={styles.emptyState}>
+        <svg className={styles.emptyIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+        </svg>
+        <p className={styles.emptyText}>No locations found</p>
+        <p className={styles.emptySubtext}>Try adjusting your search or add a new location</p>
+      </div>
+    );
   }
 
   return (

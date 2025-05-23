@@ -54,6 +54,25 @@ export function CheckInItemModal({
             ✖
           </button>
         </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            fontSize: "0.9rem",
+            gap: "1rem",
+            marginBottom: "1rem",
+          }}
+        >
+          <div>
+            <strong>Name:</strong> {item?.name}
+          </div>
+          <div>
+            <strong>Barcode:</strong> {item?.barcode}
+          </div>
+          <div>
+            <strong>Quantity:</strong> {item?.quantity}
+          </div>
+        </div>
         <Button type="button" onClick={() => setShowNewStorage(true)}>
           Create New Storage
         </Button>
