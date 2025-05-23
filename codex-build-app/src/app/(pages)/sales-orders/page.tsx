@@ -5,82 +5,49 @@ import { useRouter } from 'next/navigation';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { useSession } from '../../store/sessionStore';
+import { salesOrderApiRequest } from '../../lib/salesOrderApi';
 import type { SalesOrder } from '../../types';
 import styles from './page.module.css';
-
-const mockOrders: SalesOrder[] = [
-  {
-    orderNumber: 'AB23G23G8C',
-    date: '2025-05-19',
-    status: '出荷準備中',
-    customer: 'エコエナジー研究所',
-    total: '1,089円',
-  },
-  {
-    orderNumber: 'CD34H56I7J',
-    date: '2025-05-20',
-    status: '出荷済み',
-    customer: 'スマートホーム株式会社',
-    total: '2,500円',
-  },
-  {
-    orderNumber: 'EF45I78K9L',
-    date: '2025-05-18',
-    status: 'キャンセル',
-    customer: 'グリーンエネルギー社',
-    total: '980円',
-  },
-  {
-    orderNumber: 'GH56J89L0M',
-    date: '2025-05-17',
-    status: '出荷準備中',
-    customer: '太陽光ソリューション',
-    total: '4,200円',
-  },
-  {
-    orderNumber: 'IJ67K90M1N',
-    date: '2025-05-19',
-    status: '出荷済み',
-    customer: 'クリーンパワーサービス',
-    total: '3,300円',
-  },
-];
 
 const statuses = ['全て', '出荷準備中', '出荷済み', 'キャンセル'];
 
 export default function SalesOrdersPage() {
   const router = useRouter();
   const { session } = useSession();
-  const [orders] = useState<SalesOrder[]>(mockOrders);
-  const [filtered, setFiltered] = useState<SalesOrder[]>(mockOrders);
+  const [orders, setOrders] = useState<SalesOrder[]>([]);
   const [status, setStatus] = useState('全て');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!session?.sessionId) {
       router.replace('/login');
+    } else {
+      handleSearch();
     }
-  }, [session, router]);
-
-  const handleSearch = () => {
-    let result = orders;
-    if (status !== '全て') {
-      result = result.filter((o) => o.status === status);
-    }
-    if (dateFrom) {
-      result = result.filter((o) => o.date >= dateFrom);
-    }
-    if (dateTo) {
-      result = result.filter((o) => o.date <= dateTo);
-    }
-    setFiltered(result);
-  };
-
-  useEffect(() => {
-    handleSearch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status]);
+  }, [session]);
+
+  const handleSearch = async () => {
+    if (!session?.sessionId) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const params: Record<string, string> = {};
+      if (dateFrom) params.dateFrom = dateFrom;
+      if (dateTo) params.dateTo = dateTo;
+      if (status !== '全て') params.status = status;
+      const data = await salesOrderApiRequest('sales-orders', params);
+      setOrders(data as SalesOrder[]);
+    } catch (err) {
+      console.error(err);
+      setError(err instanceof Error ? err.message : 'Fetch failed');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!session?.sessionId) {
     return null;
@@ -105,10 +72,11 @@ export default function SalesOrdersPage() {
             </button>
           ))}
         </div>
-        <Button type="button" onClick={handleSearch}>
-          Search
+        <Button type="button" onClick={handleSearch} disabled={loading}>
+          {loading ? 'Loading...' : 'Search'}
         </Button>
       </div>
+      {error && <p className={styles.error}>{error}</p>}
       <table className={styles.table}>
         <thead>
           <tr>
@@ -121,7 +89,7 @@ export default function SalesOrdersPage() {
           </tr>
         </thead>
         <tbody>
-          {filtered.map((order) => (
+          {orders.map((order) => (
             <tr key={order.orderNumber}>
               <td>{order.orderNumber}</td>
               <td>{order.date}</td>

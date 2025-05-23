@@ -48,6 +48,10 @@
   text-align: left;
 }
 
+.error {
+  color: var(--danger);
+}
+
 @media (min-width: 640px) {
   .filters {
     flex-direction: row;
