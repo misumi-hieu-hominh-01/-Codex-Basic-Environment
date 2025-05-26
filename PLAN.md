@@ -8,25 +8,18 @@ This document outlines the plan for building a mobile-first web application desi
 
 - **Frontend**: Next.js (React + TypeScript)
 - **Styling**: CSS Modules
-- **State Management**: React Context API / Zustand
+- **State Management**: React Context API
 - **Barcode Scanning**: `barcode-detect` and `react-webcam`
 - **Data Persistence**:
-  - **Local**: LocalStorage or IndexedDB
   - **Backend**: Node.js/Express with MongoDB
-- **File Storage**: Cloudinary (or local storage for development)
+- **File Storage**: Cloudinary
 
 ## 3. Project Structure
 
-### `codex-build-app/` (Frontend - Next.js)
+### `devin-build-app/` (Frontend - Next.js)
 
 ```
 codex-build-app/
-├── public/
-│   ├── file.svg
-│   ├── globe.svg
-│   ├── next.svg
-│   ├── vercel.svg
-│   └── window.svg
 ├── src/
 │   ├── app/
 │   │   ├── (pages)/
@@ -83,8 +76,6 @@ codex-build-app/
 │   │   │       ├── Modal.tsx
 │   │   │       ├── ToggleSwitch.module.css
 │   │   │       └── ToggleSwitch.tsx
-│   │   ├── hooks/
-│   │   │   └── useCamera.ts
 │   │   ├── lib/
 │   │   │   ├── barcodeUtils.ts
 │   │   │   └── storageService.ts
@@ -110,25 +101,7 @@ codex-build-app/
 
 ### `backend/` (Backend - Node.js/Express)
 
-```
-backend/
-├── public/
-│   └── uploads/
-│       └── locations/  # Local storage for location images (dev)
-├── src/
-│   ├── index.js        # Main server entry point
-│   ├── models/
-│   │   ├── item.js     # Mongoose model for items
-│   │   └── location.js # Mongoose model for locations
-│   ├── routes/
-│   │   ├── items.js    # API routes for items
-│   │   └── locations.js # API routes for locations
-│   └── utils/
-│       └── imageStorage.js # Utility for saving/deleting images
-├── .env.example
-├── package.json
-└── README.md
-```
+- Already have (just connect it in Frontend)
 
 ## 4. Key Features
 
@@ -137,7 +110,7 @@ backend/
 - Scan item barcodes via camera (`BarcodeScanner.tsx`).
 - Manual barcode entry (`ManualBarcodeEntry.tsx`).
 - Confirmation of scanned/entered barcode (`BarcodeConfirmModal.tsx`).
-- Display list of scanned items (`ScannedItemsList.tsx`).
+- Display lastest list 5 of scanned items (`ScannedItemsList.tsx`).
 
 ### 4.2. Storage Management
 
@@ -145,10 +118,9 @@ backend/
 - View/manage storage locations (`LocationsList.tsx`, `LocationCard.tsx` on `/storage`).
 - Delete storage locations (`DeleteLocationModal.tsx`).
 
-### 4.3. Item Management & History
+### 4.3. Item History Management
 
-- View details of an item (`ItemDetails.tsx`).
-- View history of item check-ins and storage (`HistoryItemCard.tsx` on `/history`).
+- View history of item check-ins and stored in storage (`HistoryItemCard.tsx` on `/history`).
 - Assign scanned items to storage locations (`CheckInItemModal.tsx`).
 - Confirm deletion of history items (`DeleteConfirmModal.tsx`).
 
@@ -161,11 +133,9 @@ backend/
   - Components: `BarcodeScanner`, `ManualBarcodeEntry`, `BarcodeConfirmModal`, `ScannedItemsList`.
 - **`/storage` (`storage/page.tsx`)**: Display storage locations.
   - Components: `LocationsList`, `LocationCard`, `DeleteLocationModal`.
-- **`/storage/new` (`storage/new/page.tsx`)**: Form to add a new storage location.
-  - Components: `LocationForm`.- **`/items/[barcode]/store` (`items/[barcode]/store/page.tsx`)**: Assign item to a storage location.
-  - Components: `LocationsList`, `LocationForm`, `Modal`, `Button`.
 - **`/history` (`history/page.tsx`)**: View history of item movements.
   - Components: `HistoryItemCard`, `CheckInItemModal`, `DeleteConfirmModal`, `ToggleSwitch`.
+  - ToggleSwitch to switch between check-in item list (scanned list) and stored in storage list (Assign to storage)
 
 ### 5.2. Core Components (`src/app/components/`)
 
@@ -192,28 +162,24 @@ backend/
   - `CheckInItemModal.tsx`
   - `DeleteConfirmModal.tsx`
 
-### 5.3. Hooks (`src/app/hooks/`)
-
-- `useCamera.ts`: Custom hook for camera access.
-
-### 5.4. Lib (`src/app/lib/`)
+### 5.3. Lib (`src/app/lib/`)
 
 - `barcodeUtils.ts`: Utilities for barcode processing.
 - `storageService.ts`: Service for interacting with backend or local storage.
 
-### 5.5. Store (`src/app/store/`)
+### 5.4. Store (`src/app/store/`)
 
 - `itemStore.tsx`: State management for items.
 - `locationStore.tsx`: State management for locations.
 - `StoreProvider.tsx`: Provider for the global state.
 
-### 5.6. Types (`src/app/types/`)
+### 5.5. Types (`src/app/types/`)
 
 - `item.ts`: TypeScript type definitions for items.
 - `location.ts`: TypeScript type definitions for locations.
 - `index.ts`: Barrel file for types.
 
-## 6. Backend API Endpoints (`backend/src/routes/`)
+## 6. Backend API Endpoints (http://localhost:5001)
 
 ### 6.1. Items (`/api/items`)
 
@@ -243,7 +209,7 @@ backend/
 
 ## 7. Data Models (Backend - Mongoose)
 
-### 7.1. `Item` (`backend/src/models/item.js`)
+### 7.1. `Item`
 
 ```javascript
 {
@@ -257,7 +223,7 @@ backend/
 }
 ```
 
-### 7.2. `Location` (`backend/src/models/location.js`)
+### 7.2. `Location`
 
 ```javascript
 {
@@ -269,7 +235,7 @@ backend/
 
 ## 8. State/Data Flow Plan (Frontend)
 
-- **Global State (Zustand/Context - `src/app/store/`)**:
+- **Global State (Context - `src/app/store/`)**:
   - `scannedItems`: Array of items scanned but not yet placed.
   - `storageLocations`: Array of storage locations.
   - `itemHistory`: Array of items that have been checked in and stored.
@@ -289,11 +255,7 @@ backend/
 
 ## 10. File Upload and Storage (Locations)
 
-- **Frontend**: `LocationForm.tsx` uses `<input type="file">`.
-- **Backend**:
-  - `backend/src/routes/locations.js` uses `multer` for handling `multipart/form-data`.
-  - `backend/src/utils/imageStorage.js` handles saving files locally (e.g., to `public/uploads/locations/`) and deleting them.
-  - Stores image path/URL in `Location` model.
+- **Frontend**: `LocationForm.tsx` uses `<input type="file">`
 
 ## 11. Future Considerations / Enhancements
 
